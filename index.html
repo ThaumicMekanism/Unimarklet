@@ -1,42 +1,93 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Unimarklet</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<style type="text/css">
-		.isDisabled {
-			color: currentColor;
-			cursor: not-allowed;
-			opacity: 0.5;
-			text-decoration: none;
-			pointer-events: none;
-		}
-	</style>
-</head>
-<body>
-	<h1>Unimarklet</h1>
-	This site will help you add the unimarklet with any custom repo you want. It is still a work in progress but will be really cool when complete.<br>
-	There will be a way to generate your custom link easily but for now, there is just one repo by default. Will work on making it better plus adding more options.
-	<br>
-	For now, drag this element (<a id="a" style="color: red;" href="javascript:alert('Unimarklet was loading when you dragged this link! Please let the page fully load and then redrag the link or copy and paste the code instead. (AKA Wait until the link turns green.)');" onclick="return false;" class="isDisabled">Unimarklet</a>) to your favorites or paste this into your bookmark manager:
-	<br><br>
-	<textarea id="b" style="width: 720px; height: 300px;" onclick="this.select()">Loading...</textarea>
-	<script type="text/javascript">
-	$.ajax({
-	    url: 'unimarklet_client.js',
-	    converters: {
-	      'text script': function (text) {
-	        return text;
-	      }
-	    },
-	    success: function (js_code) {
-	    document.getElementById("a").href = js_code;
-	    document.getElementById("a").style.color = "green";
-	    $("#a").removeClass("isDisabled");
-		document.getElementById("b").innerHTML = js_code;
-	    }
-	});
-	
-	</script>
-</body>
+<!DOCTYPE>
+<html lang="en">
+  	<head>
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	    <title> Unimarklet </title>
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	    <script src="../scripts/popper.min.js"></script>
+	    <link href="../styles/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+		<script src="../scripts/bootstrap.min.js"></script>
+
+		<link href="../styles/sidebar.css" rel="stylesheet">
+		<script src="../scripts/sidebar.js"></script>
+
+	    <!-- This is the main styles for the site. -->
+	    <link href='https://fonts.googleapis.com/css?family=Lato|Montserrat' rel='stylesheet' type='text/css'>
+	    <link rel="stylesheet" href="../font/css/font-awesome.min.css">
+	    <link rel="stylesheet" href="../styles/noscript.css">
+	    <link rel="stylesheet" href="../styles/main.css">
+	    <link rel="stylesheet" href="../styles/style.css">
+ 	</head>
+	<body onload="jsLoad();">
+	  	
+	    <div id="wrapper">
+	    	<!-- Overlay for when navbar is active. -->
+	        <div class="overlay" onclick="document.getElementById('hamburger').click();"></div>
+	    	
+	    	<!-- NavBar Data -->
+	        <div id="navbar"></div>
+
+	        <!-- Jumbotron With Page Title -->
+			<div class="container">
+				<div class="jumbotron">
+			    	<h1>Unimarklet</h1>
+				</div>
+			</div>
+	        
+
+	        <!-- Page Content -->
+	        <div id="page-content-wrapper">
+	            <button type="button" class="hamburger is-closed" data-toggle="offcanvas" id="hamburger" style="display: none;">
+	                <span class="hamb-top"></span>
+	    			<span class="hamb-middle"></span>
+					<span class="hamb-bottom"></span>
+	            </button>
+	            <div class="container content">
+						This site will help you add the unimarklet with any custom repo you want. It is still a work in progress but will be really cool when complete.<br>
+						There will be a way to generate your custom link easily but for now, there is just one repo by default. Will work on making it better plus adding more options.
+						<br>
+						For now, drag this element (<a id="a" style="color: red;" href="javascript:alert('Unimarklet was loading when you dragged this link! Please let the page fully load and then redrag the link or copy and paste the code instead. (AKA Wait until the link turns green.)');" onclick="return false;" class="isDisabled">Unimarklet</a>) to your favorites or paste this into your bookmark manager:
+						<br><br>
+						<textarea id="b" style="width: 720px; height: 300px;" onclick="this.select()">Loading...</textarea>
+						<style type="text/css">
+							.isDisabled {
+								color: currentColor;
+								cursor: not-allowed;
+								opacity: 0.5;
+								text-decoration: none;
+								pointer-events: none;
+							}
+						</style>
+						<script type="text/javascript">
+							$.ajax({
+							    url: 'unimarklet_client.js',
+							    converters: {
+							      'text script': function (text) {
+							        return text;
+							      }
+							    },
+							    success: function (js_code) {
+							    document.getElementById("a").href = js_code;
+							    document.getElementById("a").style.color = "green";
+							    $("#a").removeClass("isDisabled");
+								document.getElementById("b").innerHTML = js_code;
+							    }
+							});
+						</script>
+	            </div>
+	        </div>
+	        <!-- /#page-content-wrapper -->
+
+	    </div>
+	    <!-- /#wrapper -->
+	    <script type="text/javascript">
+	    	/*
+				This function loads all of the assets which the page needs.
+	    	*/
+	    	function jsLoad() {
+	    	}
+	    </script>
+		
+  	</body>
 </html>
