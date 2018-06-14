@@ -1,9 +1,10 @@
 javascript:(function(){
 	fastReload = true;
 	function bmklt() {
+		my_version = "1.0.0";
 		my_repos = [
 			/*{{repos}}*/
-			["ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, true],
+			["ThaumicMekanism's Repo", "http://localhost/ThaumicMekanism%20Web%20Site/Unimarklet/repo/", "../bookmarklets_repo.js", true, true],
 		];
 		my_settings = {
 			/*{{settings}}*/
@@ -17,7 +18,7 @@ javascript:(function(){
 		}
 		var script = document.createElement('script');
 		script.setAttribute("onerror", "alert('Unimarklet could not load the main manager script!')");
-		script.setAttribute("src", "https://thaumicmekanism.github.io/Unimarklet/bookmarklets_manager.js");
+		script.setAttribute("src", "http://localhost/ThaumicMekanism%20Web%20Site/Unimarklet/bookmarklets_manager.js");
 		document.getElementsByTagName("head")[0].appendChild(script);
 	}
 	bmklt();

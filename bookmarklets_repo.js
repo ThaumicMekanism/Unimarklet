@@ -7,7 +7,7 @@
 
 //This should contain all of the sites which your repo has.
 repo_sites = {
-	localhost : new Site("localhost"),
+	"localhost" : new Site("localhost"),
 	"thaumicmekanism.github.io" : new Site("thaumicmekanism.github.io"),
 };
 

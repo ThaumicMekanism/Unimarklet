@@ -1,9 +1,14 @@
 // This script will load a script if it detects that the page has some custom script to load.
-
+ubm_version = "1.0.0";
+if (typeof my_version !== "string") {
+	var s = "The bookmarklet does not have a setting! Please make sure yours has one!";
+	alert(s);
+	throw s;
+}
 if (typeof repos !== "undefined") {
 	console.log("Reloading script!");
 }
-if (typeof settings !== "object") {
+if (typeof my_settings !== "object") {
 	console.warn("The settings object was not found or is not an object!");
 	settings = {};
 }
@@ -19,13 +24,18 @@ if (typeof settings !== "object") {
 
 */
 function ubm_main(loadr) {
+	if (typeof my_version !== "string") {
+		var s = "The bookmarklet does not have a setting! Please make sure yours has one!";
+		alert(s);
+		throw s;
+	}
 	if (loadr) {
 		if(typeof my_repos === "undefined") {
 			alert("Please make sure you have defined 'my_repos' correctly!");
 			throw "[ERROR]: Haulting script!";
 		}
 		repos = [
-			new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
+			//new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
 		];
 		for (var i = 0; i < my_repos.length; i++) {
 			r = my_repos[i];
@@ -69,6 +79,7 @@ Site = class Site {
 	constructor(hostname) {
 		this.hostname = hostname;
 		this.baseurl = "";
+		this.uid = "";
 	}
 }
 
@@ -81,22 +92,95 @@ Repo_Settings = class Repo_Settings {
 	}
 }
 
+/**
+ * Compares two software version numbers (e.g. "1.7.1" or "1.2b").
+ *
+ * @param {string} v1 The first version to be compared.
+ * @param {string} v2 The second version to be compared.
+ * @param {object} [options] Optional flags that affect comparison behavior:
+ * <ul>
+ *     <li>
+ *         <tt>lexicographical: true</tt> compares each part of the version strings lexicographically instead of
+ *         naturally; this allows suffixes such as "b" or "dev" but will cause "1.10" to be considered smaller than
+ *         "1.2".
+ *     </li>
+ *     <li>
+ *         <tt>zeroExtend: true</tt> changes the result if one version string has less parts than the other. In
+ *         this case the shorter string will be padded with "zero" parts instead of being considered smaller.
+ *     </li>
+ * </ul>
+ * @returns {number|NaN}
+ * <ul>
+ *    <li>0 if the versions are equal</li>
+ *    <li>a negative integer iff v1 < v2</li>
+ *    <li>a positive integer iff v1 > v2</li>
+ *    <li>NaN if either version string is in the wrong format</li>
+ * </ul>
+ */
+
+function versionCompare(v1, v2, options) {
+    var lexicographical = options && options.lexicographical,
+        zeroExtend = options && options.zeroExtend,
+        v1parts = v1.split('.'),
+        v2parts = v2.split('.');
+
+    function isValidPart(x) {
+        return (lexicographical ? /^\d+[A-Za-z]*$/ : /^\d+$/).test(x);
+    }
+
+    if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
+        return NaN;
+    }
+
+    if (zeroExtend) {
+        while (v1parts.length < v2parts.length) v1parts.push("0");
+        while (v2parts.length < v1parts.length) v2parts.push("0");
+    }
+
+    if (!lexicographical) {
+        v1parts = v1parts.map(Number);
+        v2parts = v2parts.map(Number);
+    }
+
+    for (var i = 0; i < v1parts.length; ++i) {
+        if (v2parts.length == i) {
+            return 1;
+        }
+
+        if (v1parts[i] == v2parts[i]) {
+            continue;
+        }
+        else if (v1parts[i] > v2parts[i]) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
+
+    if (v1parts.length != v2parts.length) {
+        return -1;
+    }
+
+    return 0;
+}
+
 /*
 	This is what runs if the script fails.
 */
 function scriptfail(element, fn) {
 	//console.log("Failed to load element:");
 	//console.log(element);
-	console.log("Failed to load url: " + element.src);
 	fn();
 }
 
 /*
 	Make script tag and load it to page
 */
-function loadScript(url, onfail) {
+function loadScript(url, onfail, onload) {
 	var script = document.createElement('script');
 	script.setAttribute("onerror", onfail);
+	script.setAttribute("onload", onload);
 	script.setAttribute("src", url);
 	document.getElementsByTagName("head")[0].appendChild(script);
 }
@@ -146,7 +230,7 @@ function loadRepos() {
 			}
 			r = repos[ubm_i];
 			repo_sites = {};
-			loadScript(r.baseurl + r.repojs, `scriptfail(this, function(){ubm_loaded = true; ubm_lfailed = "` + r.name + `";})`);
+			loadScript(r.baseurl + r.repojs, `scriptfail(this, function(){ubm_loaded = true; ubm_lfailed = "` + r.name + `";})` ,``);
 			if (r.alwayscheck) {
 				ubm_alwayscheck.push(r);
 			}
@@ -160,13 +244,14 @@ function finish_load(){
 	var hostname = thisurl.hostname;
 	var s = ubm_db[hostname];
 	if (s) {
-		loadScript(s.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + s.baseurl + `!')})`);
+		loadScript(s.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + s.baseurl + `!')})`, ``);
 	}
 
+	// This will load any scripts which do not exist in the database but the repo has always checking. I do not recommend this.
 	for (var i = 0; i < ubm_alwayscheck.length; i++) {
 		var r = ubm_alwayscheck[i];
 		if(!s || r.baseurl !== s.baseurl) {
-			loadScript(r.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!')})`);
+			loadScript(r.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!')})`, ``);
 		}
 	}
 }
