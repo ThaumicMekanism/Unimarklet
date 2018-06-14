@@ -18,7 +18,13 @@ javascript:(function(){
 		}
 		var script = document.createElement('script');
 		script.setAttribute("onerror", "alert('Unimarklet could not load the main manager script!')");
-		script.setAttribute("src", "http://localhost/ThaumicMekanism%20Web%20Site/Unimarklet/bookmarklets_manager.js");
+		var managerURL = "http://localhost/ThaumicMekanism%20Web%20Site/Unimarklet/bookmarklets_manager.js";
+		var urlelm = document.getElementById(managerURL);
+		if (urlelm) {
+			urlelm.parentNode.removeChild(urlelm)
+		}
+		script.setAttribute("src", managerURL);
+		script.setAttribute("id", managerURL);
 		document.getElementsByTagName("head")[0].appendChild(script);
 	}
 	bmklt();
