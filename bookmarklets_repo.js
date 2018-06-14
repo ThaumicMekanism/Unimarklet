@@ -9,6 +9,8 @@
 repo_sites = {
 	"localhost" : new Site("localhost"),
 	"thaumicmekanism.github.io" : new Site("thaumicmekanism.github.io"),
+	"my.dogechain.info" : new Site("my.dogechain.info"),
+	"auth.berkeley.edu" : new Site("auth.berkeley.edu"),
 };
 
 //This is where you can add custom settings for the repo which may influence the bookmarlets manager;
