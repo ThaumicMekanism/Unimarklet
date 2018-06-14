@@ -1,12 +1,20 @@
 javascript:(function(){
+	fastReload = true;
 	function bmklt() {
-		if (typeof ubm_main == "function") {
+		my_repos = [
+			/*{{repos}}*/
+			["ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, true],
+		];
+		my_settings = {
+			/*{{settings}}*/
+			"thaumicmekanism.github.io":{
+				message: "I'm a custom setting!",
+			},
+		};
+		if (fastReload && typeof ubm_main == "function") {
 			ubm_main(false);
 			return;
 		}
-		my_repos = [
-			["ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "bookmarklets_repo.js", true, true],
-		];
 		var script = document.createElement('script');
 		script.setAttribute("onerror", "alert('Unimarklet could not load the main manager script!')");
 		script.setAttribute("src", "https://thaumicmekanism.github.io/Unimarklet/bookmarklets_manager.js");

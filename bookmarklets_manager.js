@@ -1,10 +1,12 @@
 // This script will load a script if it detects that the page has some custom script to load.
 
 if (typeof repos !== "undefined") {
-	//alert("The script is already loaded! The main function should be called instead!");
-	throw "[ERROR]: Script already loaded! Please run ubm_main instead!";
+	console.log("Reloading script!");
 }
-
+if (typeof settings !== "object") {
+	console.warn("The settings object was not found or is not an object!");
+	settings = {};
+}
 //Settings
 /*
 	repos is all of the bookmarklet repos.`
@@ -23,7 +25,7 @@ function ubm_main(loadr) {
 			throw "[ERROR]: Haulting script!";
 		}
 		repos = [
-			new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "bookmarklets_repo.js", true, true),
+			new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
 		];
 		for (var i = 0; i < my_repos.length; i++) {
 			r = my_repos[i];
@@ -46,7 +48,7 @@ function ubm_main(loadr) {
 /*
 	This is the format for the 
 */
-class Repo {
+Repo = class Repo {
 	constructor(name, baseurl, repojs, repofn, alwayscheck) {
 		this.name = name;
 	    this.baseurl = baseurl;
@@ -63,7 +65,7 @@ class Repo {
 /*
 	This is for the repo to add a site.
 */
-class Site {
+Site = class Site {
 	constructor(hostname) {
 		this.hostname = hostname;
 		this.baseurl = "";
@@ -73,7 +75,7 @@ class Site {
 /*
 	This is for repos to have custom settings
 */
-class Repo_Settings {
+Repo_Settings = class Repo_Settings {
 	constructor(name){
 		this.name = name;
 	}
@@ -83,8 +85,9 @@ class Repo_Settings {
 	This is what runs if the script fails.
 */
 function scriptfail(element, fn) {
-	console.log("Failed to load element:");
-	console.log(element);
+	//console.log("Failed to load element:");
+	//console.log(element);
+	console.log("Failed to load url: " + element.src);
 	fn();
 }
 

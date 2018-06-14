@@ -8,6 +8,7 @@
 //This should contain all of the sites which your repo has.
 repo_sites = {
 	localhost : new Site("localhost"),
+	"thaumicmekanism.github.io" : new Site("thaumicmekanism.github.io"),
 };
 
 //This is where you can add custom settings for the repo which may influence the bookmarlets manager;
