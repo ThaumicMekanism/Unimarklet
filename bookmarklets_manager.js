@@ -29,13 +29,13 @@ function ubm_main(loadr) {
 		alert(s);
 		throw s;
 	}
-	if (loadr) {
+	if (loadr || true) {
 		if(typeof my_repos === "undefined") {
 			alert("Please make sure you have defined 'my_repos' correctly!");
 			throw "[ERROR]: Haulting script!";
 		}
 		repos = [
-			//new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
+			new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
 		];
 		for (var i = 0; i < my_repos.length; i++) {
 			r = my_repos[i];
@@ -182,6 +182,11 @@ function loadScript(url, onfail, onload) {
 	script.setAttribute("onerror", onfail);
 	script.setAttribute("onload", onload);
 	script.setAttribute("src", url);
+	script.setAttribute("id", url);
+	var urlelm = document.getElementById(url);
+	if (urlelm) {
+		urlelm.parentNode.removeChild(urlelm)
+	}
 	document.getElementsByTagName("head")[0].appendChild(script);
 }
 
@@ -239,20 +244,40 @@ function loadRepos() {
 }
 
 function finish_load(){
+	window.ubm_loadedids = {};
 	//Get current url
 	var thisurl = new URL(window.location.href);
 	var hostname = thisurl.hostname;
 	var s = ubm_db[hostname];
 	if (s) {
-		loadScript(s.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + s.baseurl + `!')})`, ``);
+		loadScript(s.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + s.baseurl + `!')})`, `exeScript(function(){})`);
 	}
 
 	// This will load any scripts which do not exist in the database but the repo has always checking. I do not recommend this.
-	for (var i = 0; i < ubm_alwayscheck.length; i++) {
-		var r = ubm_alwayscheck[i];
-		if(!s || r.baseurl !== s.baseurl) {
-			loadScript(r.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!')})`, ``);
-		}
+	loadAlwaysCheck(0);
+}
+function loadAlwaysCheck(id) {
+	if (id >= ubm_alwayscheck.length) {
+		return;
+	}
+	var r = ubm_alwayscheck[id];
+	if(r.baseurl !== window.location.hostname) {
+		loadScript(r.baseurl + window.location.hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!'); loadAlwaysCheck(` + (id + 1) + `);})`, `exeScript(function(){loadAlwaysCheck(` + (id + 1) + `);});`);
 	}
 }
+
+function exeScript(callback) {
+	var uid = siteID();
+	if (!ubm_loadedids[uid]){
+		main();
+		window.ubm_loadedids[uid] = true;
+	} else {
+		console.log("Scrite with same siteID has already been loaded!");
+	}
+
+	if (typeof callback === "function") {
+		callback();
+	}
+}
+
 ubm_main(true);
