@@ -1,15 +1,6 @@
 /* This will make it easy to get site settings if set. */
 site_settings = my_settings["thaumicmekanism.github.io"];
 
-/* You should ALWAYS make sure you put the custom code in the main funciton. DO NOT CALL THE MAIN FUNCTION ON YOUR OWN! */
-function main() {
-	if (window.location.pathname == "/Unimarklet/") {
-		alert("You found a secret!");
-	} else {
-		alert("This is just a test script and example! " + site_settings.message);
-	}
-}
-
 /* 
 	This is a function which will be used to determine if the current script is trying to be loaded twice by the manager.
 	To ensure that the siteID's are unique, please use this format:
@@ -23,4 +14,29 @@ function siteID() {
 		identifier = "Unimarklet.";
 	}
 	return identifier + "ThaumicMekanism@thaumicmekanism.github.io";
+}
+
+/*
+	This function will tell the version of the bookmarklet. This may be used to determine if the script should be ran.
+*/
+function siteVersion() {
+	if (window.location.pathname == "/Unimarklet/") {
+		return "1.0.0";
+	}
+	return "1.0.0";
+}
+
+
+/* 
+	You should ALWAYS make sure you put the custom code in the main funciton. DO NOT CALL THE MAIN FUNCTION ON YOUR OWN! 
+	At this point, you may load any script you want to inside the main function. 
+	I recommend using loadScript if you want to do so.
+	Ex. loadScript(scriptURL, onFailFunction, onLoadFunction)
+*/
+function main() {
+	if (window.location.pathname == "/Unimarklet/") {
+		alert("This is displayed iff in the baseurl and sub dir.");
+	} else {
+		alert("This is just a test script and example! " + site_settings.message);
+	}
 }

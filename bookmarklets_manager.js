@@ -192,6 +192,19 @@ function loadScript(url, onfail, onload) {
 }
 
 /*
+	Confirms that a setting is in there. If not, it will help you generate it.
+*/
+function settingExists(siteSettings, setting, required) {
+	if (setting in siteSettings){
+		return true;
+	}
+
+	if (required) {
+		throw "The setting '" + setting + "' is required! Make sure it is in the client (your bookmarklet) before rerunning this script.";
+	}
+}
+
+/*
 	Concat Dictionaries
 */
 function extend(obj, src) {
@@ -273,7 +286,7 @@ function exeScript(callback) {
 		main();
 		window.ubm_loadedids[uid] = true;
 	} else {
-		console.log("Scrite with same siteID has already been loaded!");
+		console.log("Script with same siteID has already been loaded!");
 	}
 
 	if (typeof callback === "function") {
