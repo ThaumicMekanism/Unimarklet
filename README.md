@@ -13,3 +13,7 @@ This is the script which is in a url. It should be in the format described below
 
 ## Unimarklet Manager
 This is the main script which the client calls. It will be the main execution script. You SHOULD ALWAYS call this script from the client and only from this repo otherwise it will not have all the up to date features and may not be legitimate. Because of this, there is nothing you have to do with this script. You do not need to copy it into your repo since it will load your repo if specified in the client.
+
+Scripts currently load in this order. This is important if you have incompatable scripts. Will add support in the future to add settings to make it so you can do some other loadings.:
+1 First repo containing the script to the last repo containing the script.
+2 The order of the repos (from first to last) which are always checked.
