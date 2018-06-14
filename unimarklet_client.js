@@ -1,7 +1,7 @@
 javascript:(function(){
 	fastReload = true;
 	function bmklt() {
-		my_version = "1.0.0";
+		my_ubmVersion = "1.0.0";
 		my_repos = [
 			/*{{repos}}*/
 			["ThaumicMekanism's Repo", "http://localhost/ThaumicMekanism%20Web%20Site/Unimarklet/repo/", "../bookmarklets_repo.js", true, true],
@@ -27,5 +27,7 @@ javascript:(function(){
 		script.setAttribute("id", managerURL);
 		document.getElementsByTagName("head")[0].appendChild(script);
 	}
-	bmklt();
+	setTimeout(function(){
+		bmklt();
+	}, 0);
 })();

@@ -1,17 +1,30 @@
-// This script will load a script if it detects that the page has some custom script to load.
+//This is the current version of the bookmarklet manager.
 ubm_version = "1.0.0";
-if (typeof my_version !== "string") {
-	var s = "The bookmarklet does not have a setting! Please make sure yours has one!";
-	alert(s);
-	throw s;
+//This is the version of the bookmark manager when the respective format changed. This is used to detect if the client, repo, or site is using legacy formatting.
+ubm_clientFormatVersion = "1.0.0";
+ubm_repoFormatVersion = "1.0.0";
+ubm_siteFormatVersion = "1.0.0";
+//This is used to confirm that the client has a version.
+function checkCompatability() {
+	if (typeof my_ubmVersion !== "string") {
+		var s = "The bookmarklet does not have a setting! Please make sure yours has one!";
+		alert(s);
+		throw s;
+	}
+	if (versionCompare(my_ubmVersion, ubm_clientFormatVersion) == -1) { /*aka is the my_ubmVersion less than ubm_clientFormatVersion*/
+		var s = "The client has an older version 'v" + my_ubmVersion + "' than is compatable with the bookarklet manager 'v" + ubm_clientFormatVersion + "'! Because of this, the script will not load until you update your bookmarklet. Possibly will add the ability to redirect to the main site and then update it for you.";
+		alert(s);
+		throw s;
+	}
+	if (typeof repos !== "undefined") {
+		console.log("Reloading script!");
+	}
+	if (typeof my_settings !== "object") {
+		console.warn("The settings object was not found or is not an object!");
+		settings = {};
+	}
 }
-if (typeof repos !== "undefined") {
-	console.log("Reloading script!");
-}
-if (typeof my_settings !== "object") {
-	console.warn("The settings object was not found or is not an object!");
-	settings = {};
-}
+checkCompatability();
 //Settings
 /*
 	repos is all of the bookmarklet repos.`
@@ -24,18 +37,14 @@ if (typeof my_settings !== "object") {
 
 */
 function ubm_main(loadr) {
-	if (typeof my_version !== "string") {
-		var s = "The bookmarklet does not have a setting! Please make sure yours has one!";
-		alert(s);
-		throw s;
-	}
+	checkCompatability();
 	if (loadr || true) {
 		if(typeof my_repos === "undefined") {
 			alert("Please make sure you have defined 'my_repos' correctly!");
 			throw "[ERROR]: Haulting script!";
 		}
 		repos = [
-			new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
+			//new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
 		];
 		for (var i = 0; i < my_repos.length; i++) {
 			r = my_repos[i];
@@ -87,9 +96,9 @@ Site = class Site {
 	This is for repos to have custom settings
 */
 Repo_Settings = class Repo_Settings {
-	constructor(name){
+	constructor(name, version){
 		this.name = name;
-		this.version = "1.0.0";
+		this.version = version;
 	}
 }
 
@@ -120,6 +129,13 @@ Repo_Settings = class Repo_Settings {
  */
 
 function versionCompare(v1, v2, options) {
+	if (v1 == "equal" || v2 == "equal") {
+		return 0;
+	}
+	if (v1 == null || v2 == null) {
+		return NaN;
+	}
+
     var lexicographical = options && options.lexicographical,
         zeroExtend = options && options.zeroExtend,
         v1parts = v1.split('.'),
@@ -216,6 +232,7 @@ function loadRepos() {
 	ubm_loaded = true;
 	ubm_lfailed = false;
 	repo_sites = {};
+	repo_ubmVersion = "equal";
 	function repo_fn(){}
 	r = null;
 	ubm_interval = setInterval(function(){
@@ -224,14 +241,18 @@ function loadRepos() {
 			if (ubm_lfailed) {
 				console.log("Could not load repo: " + ubm_lfailed);
 				ubm_lfailed = false;
-			}
-			for (var ubm_j = 0; ubm_j < repo_sites.length; ubm_j++) {
-				var site = repo_sites[ubm_j];
-				site.baseurl = r.baseurl;
-				ubm_db[site.hostname] = site;
-			}
-			if (r && r.repofn) {
-				repo_fn();
+			} else  if (versionCompare(repo_ubmVersion, ubm_repoFormatVersion) == -1) {
+				console.warn("The repo '" + r.name + `' is running an outdated format which is not compatable with this version of the bookmarklet manager. If you are the repo manager, please update your repos format and version. If you are just a user, please contac the repo manager to update their repo.
+					\n\nThe repo '` + r.name + "' will be ignored until it is updated. (Unless always check is active)");
+			} else {
+				for (var ubm_j = 0; ubm_j < repo_sites.length; ubm_j++) {
+					var site = repo_sites[ubm_j];
+					site.baseurl = r.baseurl;
+					ubm_db[site.hostname] = site;
+				}
+				if (r && r.repofn) {
+					repo_fn();
+				}
 			}
 			ubm_i--;
 			if (ubm_i < 0) {
@@ -259,7 +280,7 @@ function finish_load(){
 	if (s) {
 		loadScript(s.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + s.baseurl + `!')})`, `exeScript(function(){loadAlwaysCheck(0, "` + s.baseurl + `");})`);
 	} else {
-		loadAlwaysCheck(0, s.baseurl);
+		loadAlwaysCheck(0, hostname);
 	}
 }
  
@@ -274,19 +295,29 @@ function loadAlwaysCheck(id, baseurl) {
 }
 //TODO Add better tracking abilities to see which scripts are incompatable which which..
 function exeScript(callback) {
-	var uid = siteID();
-	if (!ubm_loadedids[uid]){
-		if (!ubm_incompScripts.has(uid)) {
-			main();
-			incompatableScripts().forEach(function(v1, v2, set){
-				ubm_incompScripts.add(v1);
-			});
-			window.ubm_loadedids[uid] = true;
+	if (versionCompare(site_ubmVersion, ubm_siteFormatVersion) != -1) {
+		var uid = siteID();
+		if (!ubm_loadedids[uid]){
+			if (!ubm_incompScripts.has(uid)) {
+				setTimeout(function(){
+					main();
+				}, 0);
+				is = incompatableScripts()
+				if (typeof is === "object") {
+					is.forEach(function(v1, v2, set){
+						ubm_incompScripts.add(v1);
+					});
+				}
+				window.ubm_loadedids[uid] = true;
+			} else {
+				alert("Could not run '" + uid + "' because it is incompatable with another script which was run before this one.");
+			}
 		} else {
-			alert("Could not run '" + uid + "' because it is incompatable with another script which was run before this one.");
+			console.log("Script with same siteID has already been loaded!");
 		}
 	} else {
-		console.log("Script with same siteID has already been loaded!");
+		var uid = siteID();
+		console.warn("Sorry but the script for the site with unique identifier '" + uid + "' is not up to date with the current format. Because of this, the script could not be loaded. Please contact the owner to update the script to the current compatable version.");
 	}
 
 	if (typeof callback === "function") {
