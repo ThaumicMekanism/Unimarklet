@@ -37,6 +37,7 @@ function main() {
 	if (window.location.pathname == "/Unimarklet/") {
 		alert("This is displayed iff in the baseurl and sub dir.");
 	} else {
+		settingExists(site_settings, "message", true);
 		alert("This is just a test script and example! " + site_settings.message);
 	}
 }

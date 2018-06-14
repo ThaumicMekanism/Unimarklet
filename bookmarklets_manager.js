@@ -35,7 +35,7 @@ function ubm_main(loadr) {
 			throw "[ERROR]: Haulting script!";
 		}
 		repos = [
-			new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
+			//new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
 		];
 		for (var i = 0; i < my_repos.length; i++) {
 			r = my_repos[i];
@@ -195,12 +195,14 @@ function loadScript(url, onfail, onload) {
 	Confirms that a setting is in there. If not, it will help you generate it.
 */
 function settingExists(siteSettings, setting, required) {
-	if (setting in siteSettings){
+	if (siteSettings && setting in siteSettings){
 		return true;
-	}
-
-	if (required) {
-		throw "The setting '" + setting + "' is required! Make sure it is in the client (your bookmarklet) before rerunning this script.";
+	} else {
+		alert("The setting '" + setting + "' does not exist in your settings for this site or you do not have settings for this site. In the future, there will be added functionality to be easily able to add settings.");
+		if (required) {
+			throw "The setting '" + setting + "' is required! Make sure it is in the client (your bookmarklet) before rerunning this script.";
+		}
+		return false;
 	}
 }
 
@@ -264,18 +266,17 @@ function finish_load(){
 	var hostname = thisurl.hostname;
 	var s = ubm_db[hostname];
 	if (s) {
-		loadScript(s.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + s.baseurl + `!')})`, `exeScript(function(){})`);
+		loadScript(s.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + s.baseurl + `!')})`, `exeScript(function(){loadAlwaysCheck(0, "` + s.baseurl + `");})`);
+	} else {
+		loadAlwaysCheck(0, s.baseurl);
 	}
-
-	// This will load any scripts which do not exist in the database but the repo has always checking. I do not recommend this.
-	loadAlwaysCheck(0);
 }
-function loadAlwaysCheck(id) {
+function loadAlwaysCheck(id, baseurl) {
 	if (id >= ubm_alwayscheck.length) {
 		return;
 	}
 	var r = ubm_alwayscheck[id];
-	if(r.baseurl !== window.location.hostname) {
+	if(r.baseurl !== baseurl) {
 		loadScript(r.baseurl + window.location.hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!'); loadAlwaysCheck(` + (id + 1) + `);})`, `exeScript(function(){loadAlwaysCheck(` + (id + 1) + `);});`);
 	}
 }
