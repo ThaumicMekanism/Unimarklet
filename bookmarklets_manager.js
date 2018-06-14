@@ -44,12 +44,12 @@ function ubm_main(loadr) {
 			throw "[ERROR]: Haulting script!";
 		}
 		repos = [
-			//new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
+			new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
 		];
 		for (var i = 0; i < my_repos.length; i++) {
 			r = my_repos[i];
 			for (var j = repos.length - 1; j >= 0; j--) {
-				if (r[1] == repos[j].baseurl) {
+				if (r[1] == repos[j].baseurl && r[2] == repos[j].repojs) {
 					r = null;
 				}
 			}
@@ -87,9 +87,34 @@ Repo = class Repo {
 Site = class Site {
 	constructor(hostname) {
 		this.hostname = hostname;
-		this.baseurl = "";
-		this.uid = "";
+		//The urlid uses the base url as a key and the uid as the value.
+		this.urlID = {};
 	}
+
+	add(baseurl, uid) {
+		this.urlID[baseurl] = uid;
+	}
+
+	merge(site) {
+		let keys = site.getKeys();
+		for (let i in keys) {
+			i = keys[i];
+			this.add(i, site.getID(i));
+		}
+	}
+
+	getID(baseurl) {
+		return this.urlID[baseurl];
+	}
+
+	getKeys() {
+		return Object.keys(this.urlID);
+	}
+
+	remove(baseurl) {
+		return delete this.urlID[baseurl];
+	}
+
 }
 
 /*
@@ -247,8 +272,12 @@ function loadRepos() {
 			} else {
 				for (var ubm_j = 0; ubm_j < repo_sites.length; ubm_j++) {
 					var site = repo_sites[ubm_j];
-					site.baseurl = r.baseurl;
-					ubm_db[site.hostname] = site;
+					site.add(r.baseurl, "");
+					if (site.hostname in ubm_db) {
+						ubm_db[site.hostname].merge(site);
+					} else {
+						ubm_db[site.hostname] = site;
+					}
 				}
 				if (r && r.repofn) {
 					repo_fn();
@@ -278,7 +307,10 @@ function finish_load(){
 	var hostname = thisurl.hostname;
 	var s = ubm_db[hostname];
 	if (s) {
-		loadScript(s.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + s.baseurl + `!')})`, `exeScript(function(){loadAlwaysCheck(0, "` + s.baseurl + `");})`);
+		var keys = s.getKeys();
+		for (let baseurl of keys) {
+			loadScript(baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + baseurl + `!')})`, `exeScript(\`` + baseurl + `\`, function(){loadAlwaysCheck(0, "` + baseurl + `");})`);
+		}
 	} else {
 		loadAlwaysCheck(0, hostname);
 	}
@@ -290,13 +322,14 @@ function loadAlwaysCheck(id, baseurl) {
 	}
 	var r = ubm_alwayscheck[id];
 	if(r.baseurl !== baseurl) {
-		loadScript(r.baseurl + window.location.hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!'); loadAlwaysCheck(` + (id + 1) + `);})`, `exeScript(function(){loadAlwaysCheck(` + (id + 1) + `);});`);
+		loadScript(r.baseurl + window.location.hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!'); loadAlwaysCheck(` + (id + 1) + `);})`, `exeScript(\`` + baseurl + `\`, function(){loadAlwaysCheck(` + (id + 1) + `);});`);
 	}
 }
 //TODO Add better tracking abilities to see which scripts are incompatable which which..
-function exeScript(callback) {
+function exeScript(baseurl, callback) {
 	if (versionCompare(site_ubmVersion, ubm_siteFormatVersion) != -1) {
 		var uid = siteID();
+		ubm_db[window.location.hostname].add(baseurl, uid);
 		if (!ubm_loadedids[uid]){
 			if (!ubm_incompScripts.has(uid)) {
 				setTimeout(function(){

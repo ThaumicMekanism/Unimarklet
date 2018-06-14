@@ -41,7 +41,7 @@ function siteVersion() {
 }
 
 /*
-	This function will return a set with different id's which are known to be incompatable with this script.
+	This function will return a set with different uid's which are known to be incompatable with this script.
 */
 function incompatableScripts() {
 	switch(window.location.pathname) {
