@@ -13,6 +13,7 @@ repo_sites = {
 
 //This is where you can add custom settings for the repo which may influence the bookmarlets manager;
 repo_settings = new Repo_Settings("My repo");
+repo_settings.version = "1.0.0";
 
 //This funciton is ran if the user decides to set it in the repo
 function repo_fn() {

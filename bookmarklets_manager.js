@@ -89,6 +89,7 @@ Site = class Site {
 Repo_Settings = class Repo_Settings {
 	constructor(name){
 		this.name = name;
+		this.version = "1.0.0";
 	}
 }
 
