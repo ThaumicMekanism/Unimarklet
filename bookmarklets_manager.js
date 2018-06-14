@@ -35,7 +35,7 @@ function ubm_main(loadr) {
 			throw "[ERROR]: Haulting script!";
 		}
 		repos = [
-			//new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
+			new Repo("ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, false),
 		];
 		for (var i = 0; i < my_repos.length; i++) {
 			r = my_repos[i];
@@ -272,17 +272,18 @@ function loadAlwaysCheck(id, baseurl) {
 		loadScript(r.baseurl + window.location.hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!'); loadAlwaysCheck(` + (id + 1) + `);})`, `exeScript(function(){loadAlwaysCheck(` + (id + 1) + `);});`);
 	}
 }
-//TODO Check the set.has(item) to confirm that it is compatable and should be ran. Otherwise it will not be.
+//TODO Add better tracking abilities to see which scripts are incompatable which which..
 function exeScript(callback) {
 	var uid = siteID();
 	if (!ubm_loadedids[uid]){
 		if (!ubm_incompScripts.has(uid)) {
 			main();
-			var incompS = incompatableScripts();
-			ubm_incompScripts.forEach(incompS.add, incompS);
+			incompatableScripts().forEach(function(v1, v2, set){
+				ubm_incompScripts.add(v1);
+			});
 			window.ubm_loadedids[uid] = true;
 		} else {
-			alert("Could not run '" + uid + "' because it is ");
+			alert("Could not run '" + uid + "' because it is incompatable with another script which was run before this one.");
 		}
 	} else {
 		console.log("Script with same siteID has already been loaded!");

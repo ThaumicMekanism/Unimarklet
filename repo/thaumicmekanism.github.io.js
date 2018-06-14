@@ -31,7 +31,7 @@ function siteVersion() {
 */
 function incompatableScripts() {
 	var incompSet = new Set([
-		"Test.ThaumicMekanism@thaumicmekanism.github.io"
+		"ThaumicMekanism@thaumicmekanism.github.io"
 	]);
 	return incompSet;
 }
