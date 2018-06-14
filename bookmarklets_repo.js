@@ -6,12 +6,12 @@
 */
 
 //This should contain all of the sites which your repo has.
-repo_sites = {
-	"localhost" : new Site("localhost"),
-	"thaumicmekanism.github.io" : new Site("thaumicmekanism.github.io"),
-	"my.dogechain.info" : new Site("my.dogechain.info"),
-	"auth.berkeley.edu" : new Site("auth.berkeley.edu"),
-};
+repo_sites = [
+	new Site("localhost"),
+	new Site("thaumicmekanism.github.io"),
+	new Site("my.dogechain.info"),
+	new Site("auth.berkeley.edu"),
+];
 
 //This is where you can add custom settings for the repo which may influence the bookmarlets manager;
 repo_settings = new Repo_Settings("My repo");

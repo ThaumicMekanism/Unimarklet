@@ -26,6 +26,15 @@ function siteVersion() {
 	return "1.0.0";
 }
 
+/*
+	This function will return a set with different id's which are known to be incompatable with this script.
+*/
+function incompatableScripts() {
+	var incompSet = new Set([
+		"Test.ThaumicMekanism@thaumicmekanism.github.io"
+	]);
+	return incompSet;
+}
 
 /* 
 	You should ALWAYS make sure you put the custom code in the main funciton. DO NOT CALL THE MAIN FUNCTION ON YOUR OWN! 

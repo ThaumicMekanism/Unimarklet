@@ -206,15 +206,6 @@ function settingExists(siteSettings, setting, required) {
 	}
 }
 
-/*
-	Concat Dictionaries
-*/
-function extend(obj, src) {
-    for (var key in src) {
-        if (src.hasOwnProperty(key)) obj[key] = src[key];
-    }
-    return obj;
-}
 //-------- END Helper functions -------
 
 //Load Repos info
@@ -234,12 +225,11 @@ function loadRepos() {
 				console.log("Could not load repo: " + ubm_lfailed);
 				ubm_lfailed = false;
 			}
-			for (var key in repo_sites) {
-				if (repo_sites.hasOwnProperty(key)) {
-					repo_sites[key].baseurl = r.baseurl;
-				}
+			for (var ubm_j = 0; ubm_j < repo_sites.length; ubm_j++) {
+				var site = repo_sites[ubm_j];
+				site.baseurl = r.baseurl;
+				ubm_db[site.hostname] = site;
 			}
-			ubm_db = extend(ubm_db, repo_sites);
 			if (r && r.repofn) {
 				repo_fn();
 			}
@@ -258,9 +248,10 @@ function loadRepos() {
 		}
 	}, 5);
 }
-
+//TODO Make capable of running multiple items in db.
 function finish_load(){
 	window.ubm_loadedids = {};
+	window.ubm_incompScripts = new Set([]);
 	//Get current url
 	var thisurl = new URL(window.location.href);
 	var hostname = thisurl.hostname;
@@ -271,6 +262,7 @@ function finish_load(){
 		loadAlwaysCheck(0, s.baseurl);
 	}
 }
+ 
 function loadAlwaysCheck(id, baseurl) {
 	if (id >= ubm_alwayscheck.length) {
 		return;
@@ -280,12 +272,18 @@ function loadAlwaysCheck(id, baseurl) {
 		loadScript(r.baseurl + window.location.hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!'); loadAlwaysCheck(` + (id + 1) + `);})`, `exeScript(function(){loadAlwaysCheck(` + (id + 1) + `);});`);
 	}
 }
-
+//TODO Check the set.has(item) to confirm that it is compatable and should be ran. Otherwise it will not be.
 function exeScript(callback) {
 	var uid = siteID();
 	if (!ubm_loadedids[uid]){
-		main();
-		window.ubm_loadedids[uid] = true;
+		if (!ubm_incompScripts.has(uid)) {
+			main();
+			var incompS = incompatableScripts();
+			ubm_incompScripts.forEach(incompS.add, incompS);
+			window.ubm_loadedids[uid] = true;
+		} else {
+			alert("Could not run '" + uid + "' because it is ");
+		}
 	} else {
 		console.log("Script with same siteID has already been loaded!");
 	}
