@@ -10,8 +10,13 @@ site_settings = my_settings["thaumicmekanism.github.io"];
 */
 function siteID() {
 	var identifier = "";
-	if (window.location.pathname == "/Unimarklet/") {
-		identifier = "Unimarklet.";
+	switch(window.location.pathname) {
+		case "/Unimarklet/":
+			identifier = "Unimarklet.";
+			break;
+		case "/venus/":
+			identifier = "Venus.";
+			break;
 	}
 	return identifier + "ThaumicMekanism@thaumicmekanism.github.io";
 }
@@ -20,20 +25,38 @@ function siteID() {
 	This function will tell the version of the bookmarklet. This may be used to determine if the script should be ran.
 */
 function siteVersion() {
-	if (window.location.pathname == "/Unimarklet/") {
-		return "1.0.0";
+	switch(window.location.pathname) {
+		case "/Unimarklet/":
+			return "1.0.0";
+			break;
+		case "/venus/":
+			return "1.0.0";
+			break;
+		default:
+			return "1.0.0";
 	}
-	return "1.0.0";
 }
 
 /*
 	This function will return a set with different id's which are known to be incompatable with this script.
 */
 function incompatableScripts() {
-	var incompSet = new Set([
-		"ThaumicMekanism@thaumicmekanism.github.io"
-	]);
-	return incompSet;
+	switch(window.location.pathname) {
+		case "/Unimarklet/":
+			return new Set([
+				
+			]);
+			break;
+		case "/venus/":
+			return new Set([
+				
+			]);
+			break;
+		default:
+			return new Set([
+				
+			]);
+	}
 }
 
 /* 
@@ -43,10 +66,15 @@ function incompatableScripts() {
 	Ex. loadScript(scriptURL, onFailFunction, onLoadFunction)
 */
 function main() {
-	if (window.location.pathname == "/Unimarklet/") {
-		alert("This is displayed iff in the baseurl and sub dir.");
-	} else {
-		settingExists(site_settings, "message", true);
-		alert("This is just a test script and example! " + site_settings.message);
+	switch(window.location.pathname) {
+		case "/Unimarklet/":
+			alert("This is displayed iff in the baseurl and sub dir.");
+			break;
+		case "/venus/":
+			loadScript("https://thaumicmekanism.github.io/Unimarklet/repo/scripts/venus.tracer.js", "", "");
+			break;
+		default:
+			settingExists(site_settings, "message", true);
+			alert("This is just a test script and example! " + site_settings.message);
 	}
 }
