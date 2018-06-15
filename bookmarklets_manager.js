@@ -49,7 +49,7 @@ function ubm_main(loadr) {
 		for (var i = 0; i < my_repos.length; i++) {
 			r = my_repos[i];
 			for (var j = repos.length - 1; j >= 0; j--) {
-				if (r[1] == repos[j].baseurl) {
+				if (r[1] == repos[j].baseurl && r[2] == repos[j].repojs) {
 					r = null;
 				}
 			}
@@ -87,18 +87,43 @@ Repo = class Repo {
 Site = class Site {
 	constructor(hostname) {
 		this.hostname = hostname;
-		this.baseurl = "";
-		this.uid = "";
+		//The urlid uses the base url as a key and the uid as the value.
+		this.urlID = {};
 	}
+
+	add(baseurl, uid) {
+		this.urlID[baseurl] = uid;
+	}
+
+	merge(site) {
+		let keys = site.getKeys();
+		for (let i in keys) {
+			i = keys[i];
+			this.add(i, site.getID(i));
+		}
+	}
+
+	getID(baseurl) {
+		return this.urlID[baseurl];
+	}
+
+	getKeys() {
+		return Object.keys(this.urlID);
+	}
+
+	remove(baseurl) {
+		return delete this.urlID[baseurl];
+	}
+
 }
 
 /*
 	This is for repos to have custom settings
 */
 Repo_Settings = class Repo_Settings {
-	constructor(name){
+	constructor(name, version){
 		this.name = name;
-		this.version = "1.0.0";
+		this.version = version;
 	}
 }
 
@@ -132,6 +157,11 @@ function versionCompare(v1, v2, options) {
 	if (v1 == "equal" || v2 == "equal") {
 		return 0;
 	}
+
+	if (v1 == null || v2 == null) {
+		return NaN;
+	}
+
     var lexicographical = options && options.lexicographical,
         zeroExtend = options && options.zeroExtend,
         v1parts = v1.split('.'),
@@ -259,13 +289,17 @@ function loadRepos() {
 				console.log("Could not load repo: " + ubm_lfailed);
 				ubm_lfailed = false;
 			} else  if (versionCompare(repo_ubmVersion, ubm_repoFormatVersion) == -1) {
-				console.warn("The repo '" + r.name + "' is running an outdated format which is not compatable with this version of the bookmarklet manager. If you are the repo manager, please update your repos format and version. If you are just a user, please contac the repo manager to update their repo.");
-				console.warn("The repo '" + r.name + "' will be ignored until it is updated. (Unless always check is active)");
+				console.warn("The repo '" + r.name + `' is running an outdated format which is not compatable with this version of the bookmarklet manager. If you are the repo manager, please update your repos format and version. If you are just a user, please contac the repo manager to update their repo.
+					\n\nThe repo '` + r.name + "' will be ignored until it is updated. (Unless always check is active)");
 			} else {
 				for (var ubm_j = 0; ubm_j < repo_sites.length; ubm_j++) {
 					var site = repo_sites[ubm_j];
-					site.baseurl = r.baseurl;
-					ubm_db[site.hostname] = site;
+					site.add(r.baseurl, "");
+					if (site.hostname in ubm_db) {
+						ubm_db[site.hostname].merge(site);
+					} else {
+						ubm_db[site.hostname] = site;
+					}
 				}
 				if (r && r.repofn) {
 					repo_fn();
@@ -295,7 +329,10 @@ function finish_load(){
 	var hostname = thisurl.hostname;
 	var s = ubm_db[hostname];
 	if (s) {
-		loadScript(s.baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + s.baseurl + `!')})`, `exeScript(function(){loadAlwaysCheck(0, "` + s.baseurl + `");})`);
+		var keys = s.getKeys();
+		for (let baseurl of keys) {
+			loadScript(baseurl + hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + baseurl + `!')})`, `exeScript(\`` + baseurl + `\`, function(){loadAlwaysCheck(0, "` + baseurl + `");})`);
+		}
 	} else {
 		loadAlwaysCheck(0, hostname);
 	}
@@ -307,24 +344,35 @@ function loadAlwaysCheck(id, baseurl) {
 	}
 	var r = ubm_alwayscheck[id];
 	if(r.baseurl !== baseurl) {
-		loadScript(r.baseurl + window.location.hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!'); loadAlwaysCheck(` + (id + 1) + `);})`, `exeScript(function(){loadAlwaysCheck(` + (id + 1) + `);});`);
+		loadScript(r.baseurl + window.location.hostname + ".js", `scriptfail(this, function(){console.log('Could not load script from site: ` + r.baseurl + `!'); loadAlwaysCheck(` + (id + 1) + `);})`, `exeScript(\`` + baseurl + `\`, function(){loadAlwaysCheck(` + (id + 1) + `);});`);
 	}
 }
 //TODO Add better tracking abilities to see which scripts are incompatable which which..
-function exeScript(callback) {
-	var uid = siteID();
-	if (!ubm_loadedids[uid]){
-		if (!ubm_incompScripts.has(uid)) {
-			main();
-			incompatableScripts().forEach(function(v1, v2, set){
-				ubm_incompScripts.add(v1);
-			});
-			window.ubm_loadedids[uid] = true;
+function exeScript(baseurl, callback) {
+	if (versionCompare(site_ubmVersion, ubm_siteFormatVersion) != -1) {
+		var uid = siteID();
+		ubm_db[window.location.hostname].add(baseurl, uid);
+		if (!ubm_loadedids[uid]){
+			if (!ubm_incompScripts.has(uid)) {
+				setTimeout(function(){
+					main();
+				}, 0);
+				is = incompatableScripts()
+				if (typeof is === "object") {
+					is.forEach(function(v1, v2, set){
+						ubm_incompScripts.add(v1);
+					});
+				}
+				window.ubm_loadedids[uid] = true;
+			} else {
+				alert("Could not run '" + uid + "' because it is incompatable with another script which was run before this one.");
+			}
 		} else {
-			alert("Could not run '" + uid + "' because it is incompatable with another script which was run before this one.");
+			console.log("Script with same siteID has already been loaded!");
 		}
 	} else {
-		console.log("Script with same siteID has already been loaded!");
+		var uid = siteID();
+		console.warn("Sorry but the script for the site with unique identifier '" + uid + "' is not up to date with the current format. Because of this, the script could not be loaded. Please contact the owner to update the script to the current compatable version.");
 	}
 
 	if (typeof callback === "function") {

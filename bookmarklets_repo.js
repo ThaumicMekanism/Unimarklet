@@ -16,9 +16,8 @@ repo_sites = [
 	new Site("auth.berkeley.edu"),
 ];
 
-//This is where you can add custom settings for the repo which may influence the bookmarlets manager;
-repo_settings = new Repo_Settings("My repo");
-repo_settings.version = "1.0.0";
+//This is where you can add custom settings for the repo which may influence the bookmarlets manager. Should take in the name of your repo and the version.
+repo_settings = new Repo_Settings("My repo", "1.0.0");
 
 //This funciton is ran if the user decides to set it in the repo
 function repo_fn() {
