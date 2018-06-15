@@ -1,3 +1,5 @@
+/* This is the version of the bookmarklets_manager which this script is written for. This is needed to confirm formatting. */
+site_ubmVersion = "1.0.0";
 /* This will make it easy to get site settings if set. */
 site_settings = my_settings["localhost"];
 
@@ -19,6 +21,14 @@ function siteVersion() {
 	return "1.0.0";
 }
 
+/*
+	This function will return a set with different id's which are known to be incompatable with this script.
+*/
+function incompatableScripts() {
+	return new Set([
+		
+	]);
+}
 
 /* 
 	You should ALWAYS make sure you put the custom code in the main funciton. DO NOT CALL THE MAIN FUNCTION ON YOUR OWN! 
@@ -29,3 +39,5 @@ function siteVersion() {
 function main() {
 	alert("IVE LOADED!!!!");
 }
+
+

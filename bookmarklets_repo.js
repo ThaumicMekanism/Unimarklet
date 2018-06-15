@@ -2,8 +2,11 @@
 	This is the repo script. Please do not make any custom funciton or function calls. 
 	If you wan to do that, please put that in the repo_fn so that the main script can call it if the user wants to run your custom script.
 
-	The names of the current 4 declared things must be the same or the manager will not work!
+	The names of the current 5 declared things must be the same or the manager will not work!
 */
+
+// This must be the same or higher than the bookmark manager version. This will be used to detect if the repo may become incompatable with 
+repo_ubmVersion = "1.0.0";
 
 //This should contain all of the sites which your repo has.
 repo_sites = [

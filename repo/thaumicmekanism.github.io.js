@@ -1,3 +1,5 @@
+/* This is the version of the bookmarklets_manager which this script is written for. This is needed to confirm formatting. */
+site_ubmVersion = "1.0.0";
 /* This will make it easy to get site settings if set. */
 site_settings = my_settings["thaumicmekanism.github.io"];
 
