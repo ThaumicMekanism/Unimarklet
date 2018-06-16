@@ -11,7 +11,7 @@ function checkCompatability() {
 		alert(s);
 		throw s;
 	}
-	if (versionCompare(my_ubmVersion, ubm_clientFormatVersion) == -1) { /*aka is the my_ubmVersion less than ubm_clientFormatVersion*/
+	if ([-1, NaN].includes(versionCompare(my_ubmVersion, ubm_clientFormatVersion))) { /*aka is the my_ubmVersion less than ubm_clientFormatVersion*/
 		var s = "The client has an older version 'v" + my_ubmVersion + "' than is compatable with the bookarklet manager 'v" + ubm_clientFormatVersion + "'! Because of this, the script will not load until you update your bookmarklet. Possibly will add the ability to redirect to the main site and then update it for you.";
 		alert(s);
 		throw s;
@@ -288,7 +288,7 @@ function loadRepos() {
 			if (ubm_lfailed) {
 				console.log("Could not load repo: " + ubm_lfailed);
 				ubm_lfailed = false;
-			} else  if (versionCompare(repo_ubmVersion, ubm_repoFormatVersion) == -1) {
+			} else  if ([-1, NaN].includes(versionCompare(repo_ubmVersion, ubm_repoFormatVersion))) {
 				console.warn("The repo '" + r.name + `' is running an outdated format which is not compatable with this version of the bookmarklet manager. If you are the repo manager, please update your repos format and version. If you are just a user, please contac the repo manager to update their repo.
 					\n\nThe repo '` + r.name + "' will be ignored until it is updated. (Unless always check is active)");
 			} else {
@@ -349,7 +349,7 @@ function loadAlwaysCheck(id, baseurl) {
 }
 //TODO Add better tracking abilities to see which scripts are incompatable which which..
 function exeScript(baseurl, callback) {
-	if (versionCompare(site_ubmVersion, ubm_siteFormatVersion) != -1) {
+	if (![-1, NaN].includes(versionCompare(site_ubmVersion, ubm_siteFormatVersion))) {
 		var uid = siteID();
 		ubm_db[window.location.hostname].add(baseurl, uid);
 		if (!ubm_loadedids[uid]){
