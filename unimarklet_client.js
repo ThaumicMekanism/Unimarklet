@@ -1,5 +1,6 @@
 javascript:(function(){
 	fastReload = true;
+	unimarklet_site = "https://thaumicmekanism.github.io/Unimarklet/";
 	function bmklt() {
 		my_ubmVersion = "1.0.0";
 		/*Repos have the current format of [Repo Name, Repo Url, Repo file, run Repo function, Check repo dir regardless of if baseurl is in the repo.]*/
@@ -19,7 +20,7 @@ javascript:(function(){
 		}
 		var script = document.createElement('script');
 		var managerURL = "http://localhost/ThaumicMekanism%20Web%20Site/Unimarklet/bookmarklets_manager.js";
-		script.setAttribute("onerror", "if(confirm('Unimarklet could not load the core script! Do you want to go to the Unimarklet site to check what is wrong?')){window.location = 'https://thaumicmekanism.github.io/Unimarklet/';}");
+		script.setAttribute("onerror", "if(window.location.href.includes('" + unimarklet_site + "');) {alert('Could not load the core manager script! I ');} else {if(confirm('Unimarklet could not load the core script! Do you want to go to the Unimarklet site to check what is wrong?')){window.location = '" + unimarklet_site + "';}}");
 		var urlelm = document.getElementById(managerURL);
 		if (urlelm) {
 			urlelm.parentNode.removeChild(urlelm)
