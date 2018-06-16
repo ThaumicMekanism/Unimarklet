@@ -6,7 +6,7 @@ javascript:(function(){
 		/*Repos have the current format of [Repo Name, Repo Url, Repo file, run Repo function, Check repo dir regardless of if baseurl is in the repo.]*/
 		my_repos = [
 			/*{{repos}}*/
-			["ThaumicMekanism's Repo", "http://localhost/ThaumicMekanism%20Web%20Site/Unimarklet/repo/", "../bookmarklets_repo.js", true, true],
+			["ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, true],
 		];
 		my_settings = {
 			/*{{settings}}*/
@@ -19,7 +19,7 @@ javascript:(function(){
 			return;
 		}
 		var script = document.createElement('script');
-		var managerURL = "http://localhost/ThaumicMekanism%20Web%20Site/Unimarklet/bookmarklets_manager.js";
+		var managerURL = "https://thaumicmekanism.github.io/Unimarklet/bookmarklets_manager.js";
 		script.setAttribute("onerror", "if(window.location.href.includes('" + unimarklet_site + "');) {alert('Could not load the core manager script! I ');} else {if(confirm('Unimarklet could not load the core script! Do you want to go to the Unimarklet site to check what is wrong?')){window.location = '" + unimarklet_site + "';}}");
 		var urlelm = document.getElementById(managerURL);
 		if (urlelm) {
