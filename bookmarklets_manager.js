@@ -149,7 +149,7 @@ Repo_Settings = class Repo_Settings {
  *    <li>0 if the versions are equal</li>
  *    <li>a negative integer iff v1 < v2</li>
  *    <li>a positive integer iff v1 > v2</li>
- *    <li>NaN if either version string is in the wrong format</li>
+ *    <li>NaN if either version string is in the wrong format or are null</li>
  * </ul>
  */
 
