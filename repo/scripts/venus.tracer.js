@@ -3,6 +3,62 @@
 */
 var debug = false;
 var newlinechar = "\n";
+var Step = class Step {
+  constructor(string) {
+    vals = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,"line","pc","inst"];
+    this.stringPattern = string;
+    this.r = [];
+    for (var i = 0; i < 32; i++) {
+      this.r[i] = "Unset";
+    }
+    this.line = "Unset";
+    this.pc = "Unset";
+    this.inst = "Unset";
+  }
+  
+  set(index, value) {
+    if (index >=0 && index < 32) {
+      this.r[index] = value;
+      return true;
+    }
+    switch(index) {
+      case "line":
+        this.line = value;
+        break;
+      case "pc":
+        this.pc = value;
+        break;
+      case "inst":
+        this.inst = value;
+        break;
+      default:
+        return false;
+    }
+    return true;
+  }
+
+  get(index) {
+    if (index >=0 && index < 32) {
+      return this.r[index];
+    }
+    switch(index) {
+      case "line":
+        return this.line;
+      case "pc":
+        return this.pc;
+      case "inst":
+        return this.inst;
+      default:
+        return false;
+    }
+  }
+
+  string() {
+    for (let i of vals) {
+      
+    }
+  }
+}
 function getVal(i) {
 //     var id = "reg-" + i + "-val";
 //     var el = document.getElementById(id);
@@ -65,6 +121,7 @@ var extra = 0;
 function getOneTrace(additional, final) {
     var res = "";
     var vals = [];
+    var stepdetails = new Step();
     if (additional != true) {
       driver.undo();
     }
@@ -81,6 +138,7 @@ function getOneTrace(additional, final) {
 //             }
 //         }
         res += numToBase(s, 32, 16, true) + "\t";
+        //stepdetails.set(j, numToBase(s, 32, 16, true));
     }
     var bpc = Math.floor(driver.sim.state_0.pc / 4);
     if (additional == true) {
@@ -124,8 +182,12 @@ function getOneTrace(additional, final) {
       driver.step();
     }
     res += line + "\t" + pc + "\t" + numToBase(inst, 32, 10, true);
+    stepdetails.set("line", line);
+    stepdetails.set("pc", pc);
+    stepdetails.set("inst", numToBase(inst, 32, 10, true));
     lin++;
     return res + newlinechar;
+    return stepdetails.string() + newlinechar;
 }
 
 async function generateTrace() {
@@ -468,7 +530,11 @@ function tracer() {
                   <th><center><input id="numtot" type="number" class="input is-small" style="width:180px;" onblur="" value=-1 spellcheck="false"></center></th>
                   <th><center><input id="numbase" type="number" class="input is-small" style="width:180px;" onblur="validateBase(this);" onkeyup="validateBase(this);" value=2 spellcheck="false"></center></th>
                 </tr>
-            </table>
+            </table><br>
+            <h3>Registers Pattern:</h3>
+            <small>To add tabs, type '\\t'. The current valid symbols to add are:<br><b>%0 through %31</b> which represent the registers<br><b>%line</b> is the current line which it is on<br><b>%pc</b> represents the pc at the current instruction.<br><b>%inst</b> represents the current instruction.</small>
+            <br>
+            <textarea id="regPattern" class="textarea" placeholder="Please type in the format of the output you want.">%0\t%1\t%2\t%3\t%4\t%5\t%6\t%7\t%8\t%9\t%10\t%11\t%12\t%13\t%14\t%15\t%16\t%17\t%18\t%19\t%20\t%21\t%22\t%23\t%24\t%25\t%26\t%27\t%28\t%29\t%30\t%31\t%line\t%pc\t%inst</textarea>
             </center>
             <center>
             <font size="2px" color="green">(&dArr; Green = True; White = false &dArr;)</font>
@@ -542,6 +608,12 @@ function tracer() {
   saveRegisters();
   hijackFunctions();
 }
+
+function addTabs(text) {
+  var tab = RegExp("\\t", "g");
+  text.replace(tab,'\t');
+}
+
 function hijackFunctions() {
   driver.os = driver.openSimulator;
   setTimeout(function(){

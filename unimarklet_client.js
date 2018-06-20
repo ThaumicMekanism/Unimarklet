@@ -8,6 +8,7 @@ javascript:(function(){
 			/*{{repos}}*/
 			["ThaumicMekanism's Repo", "https://thaumicmekanism.github.io/Unimarklet/repo/", "../bookmarklets_repo.js", true, true],
 		];
+		
 		my_settings = {
 			/*{{settings}}*/
 			"thaumicmekanism.github.io":{
