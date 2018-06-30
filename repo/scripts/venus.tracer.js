@@ -593,9 +593,15 @@ function tracer() {
 
   var editortab = document.getElementById("editor-tab");
   var simulatortab = document.getElementById("simulator-tab");
-  editortab.setAttribute("onclick", editortab.getAttribute("onclick") + "; closeTrace();")
-  simulatortab.setAttribute("onclick", simulatortab.getAttribute("onclick") + "; closeTrace();")
-  
+  var editoronclick = editortab.getAttribute("onclick");
+  var simulatoronclick = simulatortab.getAttribute("onclick");
+
+  if (typeof editoronclick === "string" && editoronclick.includes("closeTrace();")) {
+    editortab.setAttribute("onclick", editoronclick + "closeTrace();")
+  }
+  if (typeof simulatoronclick === "string" && simulatoronclick.includes("closeTrace();")) {
+    simulatortab.setAttribute("onclick", simulatoronclick + "closeTrace();")
+  }
 
   var noticelm = document.createElement("div");
   noticelm.setAttribute("id", "alertsDiv");
@@ -607,6 +613,7 @@ function tracer() {
   `;
   document.body.insertBefore(noticelm, document.body.children[0]);
   codeMirror.save();
+  
   driver.openSimulator();
   driver.openEditor();
   saveRegisters();
@@ -619,25 +626,42 @@ function addTabs(text) {
 }
 
 function hijackFunctions() {
-  driver.os = driver.openSimulator;
-  setTimeout(function(){
-  driver.openSimulator = function(){
-    saveRegs = document.getElementById("save-regs").value;
-    if (!tracing) {
-      saveRegisters();
+  if (typeof driver.os === "undefined") {
+    driver.os = driver.openSimulator;
+  }
+  if (typeof driver.oe === "undefined") {
+      driver.oe = driver.openEditor;
+      driver.openEditor = function(){
+        driver.openSimulator();
+        driver.oe();
+      }
     }
-    driver.os();
-    if(saveRegs == "true") {
-      loadRegisters();
-    }
-  };}, 10);
+  if (typeof driver.tos === "undefined") {
+  driver.tos = driver.openSimulator;
+    driver.openSimulator = function(){
+      closeTrace();
+      saveRegs = document.getElementById("save-regs").value;
+      if (!tracing) {
+        saveRegisters();
+      }
+      driver.tos();
+      if(saveRegs == "true") {
+        loadRegisters();
+      }
+    };
+  }
 }
 var curNumBase = 2;
 function removeTracer() {
   document.getElementById("trace-tab").remove();
   document.getElementById("alertsDiv").remove();
   document.getElementById("trace-tab-view").remove();
-  driver.openSimulator = driver.os;
+  return;
+  if (typeof driver.dos === "undefined") {
+      driver.openSimulator = driver.os;
+  } else {
+      driver.openSimulator = driver.dos;
+  }
 }
 
 function mainTrace() {
