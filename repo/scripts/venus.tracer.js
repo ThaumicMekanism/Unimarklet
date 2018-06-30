@@ -331,6 +331,10 @@ function genTraceMain() {
       codeMirror.save(); 
       driver.openSimulator();
       openTrace();
+      if (document.getElementById("pj2override").value) {
+        setTimeout(function(){pgenerateTrace(); tracebut.classList.remove("is-loading"); loadRegisters();}, 50);
+        return;
+      }
       setTimeout(function(){generateTrace(); tracebut.classList.remove("is-loading"); loadRegisters();}, 50);
     }, 50);
 
@@ -550,12 +554,16 @@ function tracer() {
             <table id="options2" class="table" style="width:50%; margin-bottom: 0;">
               <thead>
                 <tr>
+                  <th><center>TEMP: Proj 2 Settings<br>Trace Override</center></th>
                   <th><center>Set SP & GP to 0<br>before the trace?*</center></th>
                   <th><center>Save Registers?**<br><a onclick="resetRegisters();">Click to reset</a></center></th>
                   <th><center>Instruction first?***</center></th>
                 </tr>
               </thead>
                 <tr>
+                  <th><center>
+                    <button id="pj2override" class="button" onclick="toggleThis(this)" value="false">Proj2 Override</button>
+                  </center></th>
                   <th><center>
                     <button id="spzero" class="button is-primary" onclick="toggleThis(this)" value="true">0 SP & GP</button>
                   </center></th>
@@ -733,11 +741,11 @@ function pgetOneTrace() {
     res = "";
     for (var i = 0; i < 32; i++) {
       if (i != 0 && i % 4 == 0) { 
-        res += '<br>'; 
+        res += '\n'; 
       }
       res += vals[i] + " ";
     }
-    return res + "<br><br>";
+    return res + "\n\n";
 }
 function pgenerateTrace() {
     driver.reset();
@@ -789,7 +797,7 @@ function pgenerateTrace() {
     //res.push(newlinechar);
     //document.write(res.join(""));
     //document.close();
-    document.getElementById("trace-output").value = res.join("");
+    document.getElementById("trace-output").value = res;
     //driver.dump();
     //document.getElementById("trace-dump").value = document.getElementById("console-output").value;
     ddump();
