@@ -171,7 +171,12 @@ function getOneTrace(additional, final) {
         //prevcommand = document.getElementById("instruction-" + Math.floor(prevpc / 4));
       }
       var instmem = driver.sim.linkedProgram.prog.insts.array_9xgyxj$_0;
-      inst = instmem[prevpc]["encoding_0"];
+      if(instmem.length) {
+          inst = instmem[prevpc]["encoding_0"];
+      } else {
+          inst = 0x00000000
+      }
+      
 //       if (prevcommand != null) {
 //         var basecode = prevcommand.getElementsByTagName("td")[0].innerHTML;
 //         if (basecode != null) {
