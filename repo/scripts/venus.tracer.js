@@ -690,3 +690,116 @@ function mainTrace() {
 }
 mainTrace();
 var traceIsLoaded = true;
+
+
+
+
+
+
+function pgetVal(i) {
+    var id = "reg-" + i + "-val";
+    var el = document.getElementById(id);
+    driver.saveRegister(el, i);
+    return el.value;
+}
+function pextendZeros(s) {
+  var z = 8-s.length;
+  for (var k = 0; k < z; k++) {
+    s = "0" + s;
+  }
+  return s;
+}
+function pgetOneTrace() {
+    st = ['r 0', 'r 1', 'r 2', 'r 3', 'r 4', 'r 5', 'r 6', 'r 7', 'r 8', 'r 9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15', 'r16', 'r17', 'r18', 'r19', 'r20', 'r21', 'r22', 'r23', 'r24', 'r25', 'r26', 'r27', 'r28', 'r29', 'r30', 'r31']; // lol don't know how to javascript
+    var vals = [];
+    for (var i = 0; i < 32; i++) {
+        var s = pgetVal(i);
+        if (s.length == 0) {
+            s = "00000000";
+        } else {
+            s = s.substring(2);
+            if (i == 1 && s != "00000000") {
+              s = (parseInt(s, 16) + 4096).toString(16);
+              s = pextendZeros(s);
+            }
+            if (i == 2) {
+              s = (parseInt(s, 16)-parseInt("7FF0FFF1", 16)).toString(16);
+              s = pextendZeros(s);
+            }
+            if (i == 3) { s = "00003000"; }
+        }
+        vals.push(st[i] + "=" + s);
+    }
+    res = "";
+    for (var i = 0; i < 32; i++) {
+      if (i != 0 && i % 4 == 0) { 
+        res += '<br>'; 
+      }
+      res += vals[i] + " ";
+    }
+    return res + "<br><br>";
+}
+function pgenerateTrace() {
+    driver.reset();
+    var res = [];
+    var runNextTrace = 1;
+    try {
+        var ecallExit = 0;
+        var getecall = 0;
+      while(1) {
+        driver.step();
+        var selected = document.getElementsByClassName("is-selected")[0];
+        if (selected != null && selected.id != null && selected.id.indexOf("instruction-") != -1) {
+            var basecode = selected.getElementsByTagName("td")[1].innerHTML;
+            if (basecode != null) {
+                if(basecode == "ecall") {
+                    var r10 = parseInt(pgetVal(10));
+                    if (r10 == 10) {
+                        ecallExit = -2;
+                    } else {
+                        getecall = -2;
+                    }
+                }
+            }
+        }
+        getecall++;
+        if (!getecall) {
+            var consOut = document.getElementById("console-output");
+            if (consOut != null) {
+                console.log(consOut.value);
+                res.push(consOut.value);
+                consOut.value = "";
+            }
+        } else {
+            getecall = (getecall == -1) ? -1 : 0;
+        }
+        ecallExit++;
+        if (!ecallExit) {
+            res = res.join("");
+            res += "exiting the simulator";
+            break;
+        } else {
+            ecallExit = (ecallExit == -1) ? -1 : 0;
+        }
+        res.push(pgetOneTrace());
+        console.log(res);
+     }
+    } catch (e) { console.log(e); }
+    setAlert("Trace done! Finishing up...");
+    //res.push(newlinechar);
+    //document.write(res.join(""));
+    //document.close();
+    document.getElementById("trace-output").value = res.join("");
+    //driver.dump();
+    //document.getElementById("trace-dump").value = document.getElementById("console-output").value;
+    ddump();
+    openTrace();
+    tracing = false;
+    setAlert("");
+    return res;
+}
+function pgenTraceMain() {
+    codeMirror.save(); 
+    driver.openSimulator();
+    setTimeout(pgenerateTrace, 50);
+}
