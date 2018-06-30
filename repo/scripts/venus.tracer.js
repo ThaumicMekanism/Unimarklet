@@ -331,7 +331,7 @@ function genTraceMain() {
       codeMirror.save(); 
       driver.openSimulator();
       openTrace();
-      if (document.getElementById("pj2override").value) {
+      if (document.getElementById("pj2override").value == "true") {
         setTimeout(function(){pgenerateTrace(); tracebut.classList.remove("is-loading"); loadRegisters();}, 50);
         return;
       }
