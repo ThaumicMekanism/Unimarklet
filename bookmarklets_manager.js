@@ -36,8 +36,21 @@ checkCompatability();
 	Check Regardless (bool): This will make this repo get checked to load the script regardless of if it is in the database.
 
 */
+//This stands for load bookmark menu
+if (typeof ubm_lbmnu === "undefined") {
+	ubm_lbmnu = false;
+}
 function ubm_main(loadr) {
 	checkCompatability();
+	if (ubm_lbmnu) {
+		ubm_lbmnu = false;
+		loadAlertifyjs(ubm_menu);
+	} else {
+		ubm_lbmnu = true;
+		setTimeout(function(){
+			ubm_lbmnu = false;
+		}, 2500);
+	}
 	if (loadr || true) {
 		if(typeof my_repos === "undefined") {
 			alert("Please make sure you have defined 'my_repos' correctly!");
@@ -263,10 +276,25 @@ function settingExists(siteSettings, setting, required) {
 /*
 	This function will load alertify. It is not called unless you want to use it since it takes some time to load.
 */
-function loadAlertifyjs() {
+function loadAlertifyjs(callback) {
+	if (typeof ubm_ajsload !== "undefined") {
+		if (typeof callback === "function") {
+			return callback();
+		}
+		return;
+	}
 	loadScript("https://thaumicmekanism.github.io/packages/alertifyjs/alertify.min.js","","");
 	loadStylesheet("https://thaumicmekanism.github.io/packages/alertifyjs/css/alertify.min.css");
 	loadStylesheet("https://thaumicmekanism.github.io/packages/alertifyjs/css/themes/default.min.css");
+	ubm_ajsload = setInterval(function(){
+		if (typeof alertify !== "undefined") {
+			clearInterval(ubm_ajsload);
+			ubm_ajsload = false;
+			if (typeof callback === "function") {
+				callback();
+			}
+		}
+	}, 250);
 }
 
 //-------- END Helper functions -------
@@ -378,6 +406,11 @@ function exeScript(baseurl, callback) {
 	if (typeof callback === "function") {
 		callback();
 	}
+}
+
+
+function ubm_menu() {
+	alertify.success("Menu activated!");
 }
 
 ubm_main(true);

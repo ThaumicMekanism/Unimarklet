@@ -37,7 +37,9 @@ function incompatableScripts() {
 	Ex. loadScript(scriptURL, onFailFunction, onLoadFunction)
 */
 function main() {
-	alert("IVE LOADED!!!!");
+	loadAlertifyjs(function(){
+		alertify.notify("IVE LOADED!!!!");
+	});
 }
 
 
