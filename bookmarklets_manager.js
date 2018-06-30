@@ -45,11 +45,12 @@ function ubm_main(loadr) {
 	if (ubm_lbmnu) {
 		ubm_lbmnu = false;
 		loadAlertifyjs(ubm_menu);
+		return;
 	} else {
 		ubm_lbmnu = true;
 		setTimeout(function(){
 			ubm_lbmnu = false;
-		}, 2500);
+		}, 2000);
 	}
 	if (loadr || true) {
 		if(typeof my_repos === "undefined") {
