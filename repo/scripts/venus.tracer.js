@@ -367,12 +367,20 @@ function loadRegisters() {
     //registerInteract(i, registers[i]);
   }
 }
+
 function resetRegisters() {
   var sst = saveRegs;
   tracing = true;
   saveRegs = false;
+  currentTab = function(){};
+  if (document.getElementById("trace-tab").classList.contains("is-active")) {
+    currentTab = openTrace;
+  }
+  if (document.getElementById("editor-tab").classList.contains("is-active")) {
+    currentTab = driver.openEditor;
+  }
   driver.openSimulator();
-  openTrace();
+  currentTab();
   saveRegisters();
   tracing = false;
   saveRegs = sst;
@@ -567,7 +575,7 @@ function tracer() {
                   <th><center>
                     <button id="spzero" class="button is-primary" onclick="toggleThis(this)" value="true">0 SP & GP</button>
                   </center></th>
-                  <th><center><button id="save-regs" class="button" onclick="toggleThis(this);saveRegs = this.value" value="false">Save</button></center></th>
+                  <th><center><button id="save-regs" class="button" onclick="toggleThis(this);saveRegs = this.value;globalSaveRegMsg();" value="false">Save</button></center></th>
                   <th><center><button id="inst-first" class="button is-primary" onclick="toggleThis(this)" value="true">Inst First</button></center></th>
                 </tr>
             </table>
@@ -620,6 +628,8 @@ function tracer() {
   noticelm.setAttribute("id", "alertsDiv");
   noticelm.innerHTML = `
     <center>
+      <div id="alertsregs">
+      </div>
       <div id="alerts">
       </div>
     </center>
@@ -631,6 +641,14 @@ function tracer() {
   driver.openEditor();
   saveRegisters();
   hijackFunctions();
+}
+
+function globalSaveRegMsg() {
+  if (saveRegs == "true") {
+    document.getElementById("alertsregs").innerHTML = `[NOTICE]: Registers will be saved on tab change and the reset in the simulator will not reset it. <a onclick="resetRegisters();">If you want to reset them, click this.</a>`;
+  } else {
+    document.getElementById("alertsregs").innerHTML = "";
+  }
 }
 
 function addTabs(text) {
@@ -653,7 +671,6 @@ function hijackFunctions() {
   driver.tos = driver.openSimulator;
     driver.openSimulator = function(){
       closeTrace();
-      console.log("HI");
       if (!tracing) {
         saveRegisters();
       }
