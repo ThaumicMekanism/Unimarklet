@@ -605,6 +605,7 @@ function tracer() {
         <textarea id="trace-dump-output" class="textarea" placeholder="trace dump output" readonly=""></textarea>
       </article>
     </div>
+    <br><br>
    </div>
   </div>`;
   aelem.innerHTML = "Trace Generator";
