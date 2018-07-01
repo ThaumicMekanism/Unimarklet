@@ -350,21 +350,21 @@ var registers = new Array(32);
 var saveRegs = false;
 function saveRegisters() {
   for (var i = 0; i < 32; i++) {
-//     var id = "reg-" + i + "-val";
-//     var el = document.getElementById(id);
-//     registers[i] = el.value;
-       registers[i] = registerInteract(i, "r");
+       var id = "reg-" + i + "-val";
+       var el = document.getElementById(id);
+       registers[i] = el.value;
+       //registers[i] = registerInteract(i, "r");
   }
 }
 function loadRegisters() {
   for (var i = 0; i < 32; i++) {
-//     var id = "reg-" + i + "-val";
-//     var el = document.getElementById(id);
-//     if (registers[i] != "") {
-//       el.value = registers[i];
-//       driver.saveRegister(el, i);
-//     }
-    registerInteract(i, registers[i]);
+     var id = "reg-" + i + "-val";
+     var el = document.getElementById(id);
+     if (registers[i] != "") {
+       el.value = registers[i];
+       driver.saveRegister(el, i);
+     }
+    //registerInteract(i, registers[i]);
   }
 }
 function resetRegisters() {
@@ -567,7 +567,7 @@ function tracer() {
                   <th><center>
                     <button id="spzero" class="button is-primary" onclick="toggleThis(this)" value="true">0 SP & GP</button>
                   </center></th>
-                  <th><center><button id="save-regs" class="button" onclick="toggleThis(this)" value="false" disabled>Save</button></center></th>
+                  <th><center><button id="save-regs" class="button" onclick="toggleThis(this);saveRegs = this.value" value="false">Save</button></center></th>
                   <th><center><button id="inst-first" class="button is-primary" onclick="toggleThis(this)" value="true">Inst First</button></center></th>
                 </tr>
             </table>
@@ -653,7 +653,7 @@ function hijackFunctions() {
   driver.tos = driver.openSimulator;
     driver.openSimulator = function(){
       closeTrace();
-      saveRegs = document.getElementById("save-regs").value;
+      console.log("HI");
       if (!tracing) {
         saveRegisters();
       }
