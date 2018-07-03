@@ -425,7 +425,18 @@ decoder.branchInst = function (inst) {
 }
 
 decoder.jalrInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on jalr inst!"; 
+  func3 = decoder.func3(inst);
+  imm = decoder.Immediate(inst.inst, "I");
+  switch(func3) {
+      case 0:
+        ins = "jalr";
+        break;
+      default:
+        return decoder.handleUnknownInst(inst);
+  }
+  rd = decoder.rd(inst);
+  rs1 = decoder.rs1(inst);
+  return decoder.ITYPE_FORMAT.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm); 
 }
 
 decoder.ujTypeInst = function (inst) {
