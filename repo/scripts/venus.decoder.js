@@ -86,6 +86,8 @@ function setAlert(m) {
 }
 
 function decode() {
+    var decodebut = document.getElementById("decoder-decode");
+    decodebut.classList.add("is-loading");
     //This function will go line by line and attempt to decode instrucitons.
     program = document.getElementById("hex-inst").value;
     decoded = [];
@@ -97,8 +99,15 @@ function decode() {
       }
     }
     document.getElementById("decoded-inst").value = decoded.join("\n");
+    decodebut.classList.remove("is-loading")
 }
-function decoder() {
+
+function clearDecoder() {
+  document.getElementById("decoded-inst").value = "";
+  program = document.getElementById("hex-inst").value = "";
+}
+
+function venusdecoder() {
   var lielem = document.createElement('li');
   var aelem = document.createElement('a');
   //aelem.setAttribute("onclick", "genTraceMain()");
@@ -113,7 +122,7 @@ function decoder() {
     <div class="tile">
       <div class="tile is-parent">
           <article class="tile is-child is-primary" align="center">
-            <font size="6px">Instruction Decoder (WIP) v1.0.0</font><br>
+            <font size="6px">Instruction Decoder v1.0.0</font><br>
             <font size="4px">Created by Stephan Kaminsky.</font>
           </article>
         </center>
@@ -248,7 +257,7 @@ function mainDecoder() {
 
   if (typeof decoderIsLoaded == "undefined") {
     console.log("Loading decoder...");
-     decoder();
+     venusdecoder();
   } else {
     console.log("Reloading decoder...");
     var decodertab = document.getElementById("decoder-tab");
@@ -257,7 +266,7 @@ function mainDecoder() {
       wasactive = true;
     }
     removeDecoder();
-    decoder();
+    venusdecoder();
     if (wasactive) {
       openDecoder();
     }
