@@ -395,7 +395,33 @@ decoder.rWordsInst = function (inst) {
 }
 
 decoder.branchInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on branch inst!"; 
+  func3 = decoder.func3(inst);
+  switch(func3) {
+    case 0:
+        ins = "beq";
+        break;
+    case 1:
+        ins = "bne";
+        break;
+    case 4:
+        ins = "blt";
+        break;
+    case 5:
+        ins = "bge";
+        break;
+    case 6:
+        ins = "bltu";
+        break;
+    case 7:
+        ins = "bgeu";
+        break;
+    default:
+        return decoder.handleUnknownInst(inst);
+  }
+  imm = decoder.Immediate(inst.inst, "SB");
+  rs1 = decoder.rs1(inst);
+  rs2 = decoder.rs2(inst);
+  return decoder.BRANCH_FORMAT.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%imm%", imm);
 }
 
 decoder.jalrInst = function (inst) {
