@@ -84,19 +84,19 @@ function downloadDecoded(id, filename, custom_name) {
 function setAlert(m) {
   document.getElementById("alerts").innerHTML = m;
 }
-var Instruction = class Instruction {
-  constructor(hex) {
-    this.hex = hex;
-  }
-  opcode() {
-    return extractBits(this.hex, 0, 6);
-  }
-}
-function extractBits(word, start, end) {
-  return (word >> start) & ~(~0 << (end - start + 1));
-}
+
 function decode() {
-    
+    //This function will go line by line and attempt to decode instrucitons.
+    program = document.getElementById("hex-inst").value;
+    decoded = [];
+    if (program) {
+      program = program.split('\n');
+      for (line of program) {
+        inst = new Instruction(line);
+        decoded.push(inst.decode());
+      }
+    }
+    document.getElementById("decoded-inst").value = decoded.join("\n");
 }
 function decoder() {
   var lielem = document.createElement('li');
@@ -113,7 +113,7 @@ function decoder() {
     <div class="tile">
       <div class="tile is-parent">
           <article class="tile is-child is-primary" align="center">
-            <font size="6px">Instruction Decoder v1.0.0</font><br>
+            <font size="6px">Instruction Decoder (WIP) v1.0.0</font><br>
             <font size="4px">Created by Stephan Kaminsky.</font>
           </article>
         </center>
