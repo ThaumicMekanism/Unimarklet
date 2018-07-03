@@ -75,6 +75,7 @@ function main() {
 			break;
 		case "/venus/":
 			loadScript("https://thaumicmekanism.github.io/Unimarklet/repo/scripts/venus.tracer.js", "", "");
+			loadScript("https://thaumicmekanism.github.io/Unimarklet/repo/scripts/venus.decoder.js", "", "");
 			break;
 		default:
 			settingExists(site_settings, "message", true);
