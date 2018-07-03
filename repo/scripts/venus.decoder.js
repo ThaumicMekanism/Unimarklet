@@ -99,7 +99,7 @@ function decode() {
       program = program.split('\n');
       for (line of program) {
         inst = new Instruction(line);
-        decoded.push(inst.decode());
+        decoded.push(inst.decoded);
       }
     }
     decoded.push("");
@@ -109,7 +109,7 @@ function decode() {
 
 function clearDecoder() {
   document.getElementById("decoded-inst").value = "";
-  program = document.getElementById("hex-inst").value = "";
+  document.getElementById("hex-inst").value = "";
 }
 
 function venusdecoder() {
@@ -258,6 +258,7 @@ function loadToEditor() {
 
 var curNumBase = 2;
 function removeDecoder() {
+  dcdrval = document.getElementById("hex-inst").value;
   document.getElementById("decoder-tab").remove();
   document.getElementById("alertsDiv").remove();
   document.getElementById("decoder-tab-view").remove();
@@ -284,6 +285,9 @@ function mainDecoder() {
     }
     removeDecoder();
     venusdecoder();
+    if (typeof dcdrval != "undefined") {
+      document.getElementById("hex-inst").value = dcdrval;
+    }
     if (wasactive) {
       openDecoder();
     }
