@@ -2,6 +2,7 @@
     Created by Stephan Kaminsky
 */
 var debug = false;
+decoder = {};
 function CopyToClipboard(containerid) {
   var copyText = document.getElementById(containerid);
 
@@ -87,6 +88,7 @@ function setAlert(m) {
 
 function decode() {
     var decodebut = document.getElementById("decoder-decode");
+    decoder.useSudoRegs = document.getElementById("sudoRegID").value == "true";
     decodebut.classList.add("is-loading");
     //This function will go line by line and attempt to decode instrucitons.
     program = document.getElementById("hex-inst").value;
@@ -98,6 +100,7 @@ function decode() {
         decoded.push(inst.decode());
       }
     }
+    decoded.push("");
     document.getElementById("decoded-inst").value = decoded.join("\n");
     decodebut.classList.remove("is-loading")
 }
@@ -163,7 +166,7 @@ function venusdecoder() {
      </div>
      <div class="tile is-parent">
       <article class="tile is-child">
-        Instruction Hex:&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="CopyToClipboard('hex-inst')">Copy!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="downloadtrace('hex-inst', 'hex.out', true)">Download!</a>
+        Instruction Hex:&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="CopyToClipboard('hex-inst')">Copy!</a>
         <br>
         <font size="2px">Make sure your instructions are in the correct hex format: Ex. 0xFFFFFFFF. Make sure instrucitons are separated just by a new line. Unknown instruction will not be decoded.</font>
         <br>
@@ -172,7 +175,7 @@ function venusdecoder() {
     </div>
     <div class="tile is-parent">
       <article class="tile is-child">
-        Decoded Instructions:&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="CopyToClipboard('decoded-inst')">Copy!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="downloadtrace('decoded-inst', 'decoded.hex', true)">Download!</a>
+        Decoded Instructions:&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="CopyToClipboard('decoded-inst')">Copy!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="downloadtrace('decoded-inst', 'decoded.hex', true)">Download!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="loadToEditor();">Load to Editor!</a>
         <br>
         <textarea id="decoded-inst" class="textarea" placeholder="trace dump output" readonly=""></textarea>
       </article>
@@ -237,6 +240,17 @@ function dhijackFunctions() {
 function addTabs(text) {
   var tab = RegExp("\\t", "g");
   text.replace(tab,'\t');
+}
+
+function loadToEditor() {
+  val = document.getElementById("decoded-inst").value;
+  if (codeMirror.getValue()) {
+    if (!confirm("There was some code already in your editor! Do you want to override that code?")) {
+      return;
+    }
+  }
+  codeMirror.setValue(val);
+  driver.openEditor();
 }
 
 var curNumBase = 2;
