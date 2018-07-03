@@ -447,7 +447,43 @@ decoder.ujTypeInst = function (inst) {
 }
 
 decoder.systemInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on system insts!"; 
+  func3 = decoder.func3(inst);
+  switch(func3) {
+    case 0:
+        imm = decoder.Immediate(inst.inst, "I");
+        switch(imm) {
+            case 0x000:
+                ins = "ecall";
+                break;
+            case 0x001:
+                ins = "ebreak";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+    case 1:
+        ins = "CSRRW";
+        break;
+    case 2:
+        ins = "CSRRS";
+        break;
+    case 3:
+        ins = "CSRRC";
+        break;
+    case 5:
+        ins = "CSRRWI";
+        break;
+    case 6:
+        ins = "CSRRSI";
+        break;
+    case 7:
+        ins = "CSRRCI";
+        break;
+    default:
+        return decoder.handleUnknownInst(inst);
+  }
+  return decoder.INST_FORMAT.replace("%inst%", ins);
 }
 
 decoder.opcodeMap = {
