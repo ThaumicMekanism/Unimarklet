@@ -182,6 +182,7 @@ function venusdecoder() {
         <textarea id="decoded-inst" class="textarea" placeholder="trace dump output" readonly=""></textarea>
       </article>
     </div>
+    <br><br>
    </div>
   </div></center>`;
   aelem.innerHTML = "RISC-V Instruction Decoder";
