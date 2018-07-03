@@ -122,7 +122,7 @@ function venusdecoder() {
   secelem.setAttribute("class", "section");
   secelem.setAttribute("id", "decoder-tab-view");
   secelem.style.display = "none";
-  secelem.innerHTML = `<div class="tile is-ancestor">
+  secelem.innerHTML = `<center><div class="tile is-ancestor">
   <div class="tile is-vertical">
     <div class="tile">
       <div class="tile is-parent">
@@ -150,8 +150,8 @@ function venusdecoder() {
      <div class="tile">
        <div class="tile is-parent">
          <article class="tile is-child is-primary" align="center">
-            Options!
             <center>
+            Options!
             <table id="options" class="table" style="width:50%; margin-bottom: 0;">
               <thead>
                 <tr>
@@ -183,7 +183,7 @@ function venusdecoder() {
       </article>
     </div>
    </div>
-  </div>`;
+  </div></center>`;
   aelem.innerHTML = "RISC-V Instruction Decoder";
   lielem.appendChild(aelem);
   document.getElementsByClassName('tabs')[0].children[0].appendChild(lielem);
