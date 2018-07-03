@@ -33,7 +33,7 @@ var Instruction = class Instruction {
       if (this.inst == "") {
         return "";
       }
-      return this.inst + " #Unknown Instruction!";
+      return "#" + this.inst + " #Unknown Instruction!";
     }
     //this part actually decodes inst
     var op = decoder.opcode(this.inst);
@@ -49,7 +49,7 @@ var Instruction = class Instruction {
 }
 
 decoder.handleUnknownInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Unknown Instruction!";
+  return "#" + decoder.decimalToHexString(inst) + " #Unknown Instruction!";
 }
 
 decoder.opcode = function (inst) {
@@ -132,43 +132,43 @@ decoder.fenceInst = function (inst) {
 }
 
 decoder.itypeArithmeticInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Working on itype arithmetic insts!";
+  return "#" + decoder.decimalToHexString(inst) + " #Working on itype arithmetic insts!";
 }
 
 decoder.uTypeInst = function (inst, mnemonic) {
-  return decoder.decimalToHexString(inst) + " #Working on utype insts! " + mnemonic;
+  return "#" + decoder.decimalToHexString(inst) + " #Working on utype insts! " + mnemonic;
 }
 
 decoder.iWordsInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Working on itype word arithmetic insts!"; 
+  return "#" + decoder.decimalToHexString(inst) + " #Working on itype word arithmetic insts!"; 
 }
 
 decoder.sTypeInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Working on sType inst!"; 
+  return "#" + decoder.decimalToHexString(inst) + " #Working on sType inst!"; 
 }
 
 decoder.rTypeInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Working on rtype inst!"; 
+  return "#" + decoder.decimalToHexString(inst) + " #Working on rtype inst!"; 
 }
 
 decoder.rWordsInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Working on r words inst!"; 
+  return "#" + decoder.decimalToHexString(inst) + " #Working on r words inst!"; 
 }
 
 decoder.branchInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Working on branch inst!"; 
+  return "#" + decoder.decimalToHexString(inst) + " #Working on branch inst!"; 
 }
 
 decoder.jalrInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Working on jalr inst!"; 
+  return "#" + decoder.decimalToHexString(inst) + " #Working on jalr inst!"; 
 }
 
 decoder.ujTypeInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Working on jal inst!"; 
+  return "#" + decoder.decimalToHexString(inst) + " #Working on jal inst!"; 
 }
 
 decoder.systemInst = function (inst) {
-  return decoder.decimalToHexString(inst) + " #Working on system insts!"; 
+  return "#" + decoder.decimalToHexString(inst) + " #Working on system insts!"; 
 }
 
 decoder.opcodeMap = {
