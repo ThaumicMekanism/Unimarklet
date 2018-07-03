@@ -19,49 +19,52 @@ decoder.getRegString = function(i) {
   return "x" + i;
 }
 
+//Add support for:            012123409354290785280385902805982058035972: 0x12345678 # nop
+//           0--sdfkasc0121234093542907852803dfghhjdhgj85902805982058035972:add x0 x0 x0# nop
+
 var Instruction = class Instruction {
   constructor(hex) {
+    this.opcode = NaN;
+    this.rd = NaN;
+    this.rs1 = NaN;
+    this.rs2 = NaN;
+    this.func3 = NaN;
+    this.func7 = NaN;
+    this.imm = NaN;
+    this.decoded = "";
     this.inst = parseInt(hex);
     this.notvalid = this.inst != hex;
     if (this.notvalid) {
       this.inst = hex;
-    }
-  }
-
-  decode() {
-    if (this.notvalid) {
       if (this.inst == "") {
-        return "";
+        this.decoded = "";
       }
-      return "#" + this.inst + " #Unknown Instruction!";
+      this.decoded = "#" + this.inst + " #Unknown Instruction!";
     }
     //this part actually decodes inst
-    var op = decoder.opcode(this.inst);
-    var process = decoder.opcodeMap[op];
+    this.opcode = decoder.opcode(this);
+    var process = decoder.opcodeMap[this.opcode];
     if (!process) {
-      return decoder.handleUnknownInst(this.inst);
+      this.decoded = decoder.handleUnknownInst(this);
     }
-    return process(this.inst);
+    this.decoded = process(this);
   }
-  
-  
-
 }
 
 decoder.handleUnknownInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Unknown Instruction!";
+  return "#" + decoder.decimalToHexString(inst.inst) + " #Unknown Instruction!";
 }
 
 decoder.opcode = function (inst) {
-    return decoder.extractBits(inst, 0, 6);
+    return decoder.extractBits(inst.inst, 0, 6);
 }
 
 decoder.func3 = function (inst) {
-  return decoder.extractBits(inst, 12, 14);
+  return decoder.extractBits(inst.inst, 12, 14);
 }
 
 decoder.func7 = function (inst) {
-  return decoder.extractBits(inst, 25, 31);
+  return decoder.extractBits(inst.inst, 25, 31);
 }
 
 decoder.reg = function (r) {
@@ -72,24 +75,24 @@ decoder.reg = function (r) {
 }
 
 decoder.rd = function (inst) {
-  r = decoder.extractBits(inst, 7, 11);
+  r = decoder.extractBits(inst.inst, 7, 11);
   return decoder.reg(r);
 }
 
 decoder.rs1 = function (inst) {
-  r = decoder.extractBits(inst, 15, 19);
+  r = decoder.extractBits(inst.inst, 15, 19);
   return decoder.reg(r);
 }
 
 decoder.rs2 = function (inst) {
-  r = decoder.extractBits(inst, 20, 24);
+  r = decoder.extractBits(inst.inst, 20, 24);
   return decoder.reg(r);
 }
 
 decoder.loadInst = function (inst) {
   rs2 = decoder.rd(inst);
   rs1 = decoder.rs1(inst);
-  imm = decoder.Immediate(inst, "I");
+  imm = decoder.Immediate(inst.inst, "I");
   func3 = decoder.func3(inst);
   switch(func3) {
     case 0:
@@ -127,12 +130,61 @@ decoder.fenceInst = function (inst) {
     case 1:
       return INST_FORMAT.replace("%inst%", "fence.i");
     default:
-      return handleUnknownInst(inst);
+      return decoder.handleUnknownInst(inst);
   }
 }
 
 decoder.itypeArithmeticInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on itype arithmetic insts!";
+  func3 = decoder.func3(inst);
+  func7 = decoder.func7(inst);
+  imm = decoder.Immediate(inst.inst, "I");
+  switch(func3) {
+      case 0:
+        ins = "addi";
+        break;
+      case 1:
+        if (func7 == 0x00) {
+            ins = "slli";
+            imm = decoder.extractBits(imm, 0, 5);
+        } else {
+            return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 2:
+        ins = "slti";
+        break;
+      case 3:
+        ins = "sltiu";
+        break;
+      case 4:
+        ins = "xori";
+        break;
+      case 5:
+        switch(func7) {
+            case 0x00:
+                ins = "srli";
+                imm = decoder.extractBits(imm, 0, 5);
+                break;
+            case 0x20:
+                ins = "srai";
+                imm = decoder.extractBits(imm, 0, 5);
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 6:
+        ins = "ori";
+        break;
+      case 7:
+        ins = "andi";
+        break;
+      default:
+        return decoder.handleUnknownInst(inst);
+  }
+  rd = decoder.rd(inst);
+  rs1 = decoder.rs1(inst);
+  return decoder.ITYPE_FORMAT.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm);
 }
 
 decoder.uTypeInst = function (inst, mnemonic) {
@@ -144,31 +196,31 @@ decoder.iWordsInst = function (inst) {
 }
 
 decoder.sTypeInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on sType inst!"; 
+  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on sType inst!"; 
 }
 
 decoder.rTypeInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on rtype inst!"; 
+  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on rtype inst!"; 
 }
 
 decoder.rWordsInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on r words inst!"; 
+  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on r words inst!"; 
 }
 
 decoder.branchInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on branch inst!"; 
+  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on branch inst!"; 
 }
 
 decoder.jalrInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on jalr inst!"; 
+  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on jalr inst!"; 
 }
 
 decoder.ujTypeInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on jal inst!"; 
+  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on jal inst!"; 
 }
 
 decoder.systemInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on system insts!"; 
+  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on system insts!"; 
 }
 
 decoder.opcodeMap = {
