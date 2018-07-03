@@ -258,11 +258,140 @@ decoder.sTypeInst = function (inst) {
 }
 
 decoder.rTypeInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on rtype inst!"; 
+  func3 = decoder.func3(inst);
+  func7 = decoder.func7(inst);
+  switch(func3) {
+      case 0:
+        switch(func7) {
+            case 0x00:
+                ins = "add";
+                break;
+            case 0x20:
+                ins = "sub";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 1:
+        switch(func7) {
+            case 0x00:
+                ins = "sll";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 2:
+        switch(func7) {
+            case 0x00:
+                ins = "slt";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 3:
+        switch(func7) {
+            case 0x00:
+                ins = "sltu";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 4:
+        switch(func7) {
+            case 0x00:
+                ins = "xor";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 5:
+        switch(func7) {
+            case 0x00:
+                ins = "srl";
+                break;
+            case 0x20:
+                ins = "sra";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 6:
+        switch(func7) {
+            case 0x00:
+                ins = "or";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 7:
+        switch(func7) {
+            case 0x00:
+                ins = "and";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      default:
+        return decoder.handleUnknownInst(inst);
+  }
+  rd = decoder.rd(inst);
+  rs1 = decoder.rs1(inst);
+  rs2 = decoder.rs2(inst);
+  return decoder.RTYPE_FORMAT.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%rd%", rd);
 }
 
 decoder.rWordsInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on r words inst!"; 
+  func3 = decoder.func3(inst);
+  func7 = decoder.func7(inst);
+  switch(func3) {
+      case 0:
+        switch(func7) {
+            case 0x00:
+                ins = "addw";
+                break;
+            case 0x20:
+                ins = "subw";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 1:
+        switch(func7) {
+            case 0x00:
+                ins = "sllw";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 5:
+        switch(func7) {
+            case 0x00:
+                ins = "srlw";
+                break;
+            case 0x20:
+                ins = "sraw";
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      default:
+        return decoder.handleUnknownInst(inst);
+  }
+  rd = decoder.rd(inst);
+  rs1 = decoder.rs1(inst);
+  rs2 = decoder.rs2(inst);
+  return decoder.RTYPE_FORMAT.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%rd%", rd);
 }
 
 decoder.branchInst = function (inst) {
