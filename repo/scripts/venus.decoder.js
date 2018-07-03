@@ -19,7 +19,7 @@ function openDecoder() {
   var editortab = document.getElementById("editor-tab");
   var simulatortab = document.getElementById("simulator-tab");
   var decodertab = document.getElementById("decoder-tab");
-  var decoder = document.getElementById("decoder-tab-view");
+  var decodertv = document.getElementById("decoder-tab-view");
   var simulator = document.getElementById("simulator-tab-view");
   
   codeMirror.save(); 
@@ -28,14 +28,14 @@ function openDecoder() {
     simulatortab.setAttribute("class", "");
     decodertab.setAttribute("class", "is-active");
     simulator.style.display = "none";
-    decoder.style.display = "block";
+    decodertv.style.display = "block";
   }
 }
 function closeDecoder() {
   var decodertab = document.getElementById("decoder-tab");
-  var decoder = document.getElementById("decoder-tab-view");
+  var decodertv = document.getElementById("decoder-tab-view");
   
-  decoder.style.display = "none";
+  decodertv.style.display = "none";
   decodertab.setAttribute("class", "");
 }
 function toggleThis(e) {

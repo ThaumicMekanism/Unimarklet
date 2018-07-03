@@ -22,7 +22,7 @@ decoder.getRegString = function(i) {
 var Instruction = class Instruction {
   constructor(hex) {
     this.inst = parseInt(hex);
-    this.notvalid = this.inst == this.hex;
+    this.notvalid = this.inst != this.hex;
     if (this.notvalid) {
       this.inst = hex;
     }
@@ -30,6 +30,9 @@ var Instruction = class Instruction {
 
   decode() {
     if (this.notvalid) {
+      if (this.inst == "") {
+        return "";
+      }
       return this.inst + " #Unknown Instruction!";
     }
     //this part actually decodes inst
