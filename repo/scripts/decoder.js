@@ -440,7 +440,10 @@ decoder.jalrInst = function (inst) {
 }
 
 decoder.ujTypeInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on jal inst!"; 
+  ins = "jal";
+  imm = decoder.Immediate(inst.inst, "UJ");
+  rd = decoder.rd(inst);
+  return decoder.UTYPE_FORMAT.replace("%inst%", ins).replace("%rd%", rd).replace("%imm%", imm);
 }
 
 decoder.systemInst = function (inst) {
