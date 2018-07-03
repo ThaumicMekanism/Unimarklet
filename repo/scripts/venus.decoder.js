@@ -2,7 +2,9 @@
     Created by Stephan Kaminsky
 */
 var debug = false;
-decoder = {};
+if (typeof decoder === "undefined") {
+  decoder = {};
+}
 function CopyToClipboard(containerid) {
   var copyText = document.getElementById(containerid);
 
@@ -249,8 +251,9 @@ function loadToEditor() {
       return;
     }
   }
-  codeMirror.setValue(val);
   driver.openEditor();
+  codeMirror.setValue(val);
+  codeMirror.refresh();
 }
 
 var curNumBase = 2;
