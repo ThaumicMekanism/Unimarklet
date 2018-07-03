@@ -38,8 +38,10 @@ var Instruction = class Instruction {
       this.inst = hex;
       if (this.inst == "") {
         this.decoded = "";
+      } else {
+        this.decoded = "#" + this.inst + " #Unknown Instruction!";
       }
-      this.decoded = "#" + this.inst + " #Unknown Instruction!";
+      return;
     }
     //this part actually decodes inst
     this.opcode = decoder.opcode(this);
@@ -188,15 +190,71 @@ decoder.itypeArithmeticInst = function (inst) {
 }
 
 decoder.uTypeInst = function (inst, mnemonic) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on utype insts! " + mnemonic;
+  rd = decoder.rd(inst);
+  imm = decoder.Immediate(inst.inst, "U");
+  return decoder.UTYPE_FORMAT.replace("%inst%", mnemonic).replace("%rd%", rd).replace("%imm%", imm);
 }
 
 decoder.iWordsInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst) + " #Working on itype word arithmetic insts!"; 
+  func3 = decoder.func3(inst);
+  func7 = decoder.func7(inst);
+  imm = decoder.Immediate(inst.inst, "I");
+  switch(func3) {
+      case 0:
+        ins = "addiw";
+        break;
+      case 1:
+        if (func7 == 0x00) {
+            ins = "slliw";
+            imm = decoder.extractBits(imm, 0, 5);
+        } else {
+            return decoder.handleUnknownInst(inst);
+        }
+        break;
+      case 5:
+        switch(func7) {
+            case 0x00:
+                ins = "srliw";
+                imm = decoder.extractBits(imm, 0, 5);
+                break;
+            case 0x20:
+                ins = "sraiw";
+                imm = decoder.extractBits(imm, 0, 5);
+                break;
+            default:
+                return decoder.handleUnknownInst(inst);
+        }
+        break;
+      default:
+        return decoder.handleUnknownInst(inst);
+  }
+  rd = decoder.rd(inst);
+  rs1 = decoder.rs1(inst);
+  return decoder.ITYPE_FORMAT.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm);
 }
 
 decoder.sTypeInst = function (inst) {
-  return "#" + decoder.decimalToHexString(inst.inst) + " #Working on sType inst!"; 
+  func3 = decoder.func3(inst);
+  switch(func3) {
+      case 0:
+        ins = "sb";
+        break;
+      case 1:
+        ins = "sh";
+        break;
+      case 2:
+        ins = "sw";
+        break;
+      case 3:
+        ins = "sd";
+        break;
+      default:
+        return decoder.handleUnknownInst(inst);
+  }
+  imm = decoder.Immediate(inst.inst, "S");
+  rs1 = decoder.rs1(inst);
+  rs2 = decoder.rs2(inst);
+  return decoder.MEM_FORMAT.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%imm%", imm);
 }
 
 decoder.rTypeInst = function (inst) {
