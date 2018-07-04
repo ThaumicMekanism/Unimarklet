@@ -89,12 +89,12 @@ function setAlert(m) {
 }
 
 function decode() {
-  if (typeof decoder !== "object") {
-    var s = "[ERROR]: Could not find the decoder object! Check to see if the decoder actually loaded!";
-    alert(s);
-    console.warn(s);
-    return;
-  }
+    if (typeof decoder !== "object") {
+      var s = "[ERROR]: Could not find the decoder object! Check to see if the decoder actually loaded!";
+      alert(s);
+      console.warn(s);
+      return;
+    }
     //Add support for labels...
     //Add support for:            012123409354290785280385902805982058035972: 0x12345678 # nop
     //           0--sdfkasc0121234093542907852803dfghhjdhgj85902805982058035972:add x0 x0 x0# nop
@@ -104,7 +104,8 @@ function decode() {
     decoder.pseudoDecode = document.getElementById("usePseudoInst").value == "true";
     decoder.nopAll = document.getElementById("nopAll").value == "true;"
     decodebut.classList.add("is-loading");
-    //This function will go line by line and attempt to decode instrucitons.
+    try {
+      //This function will go line by line and attempt to decode instrucitons.
     program = document.getElementById("hex-inst").value;
     decoded = [];
     if (program) {
@@ -119,7 +120,11 @@ function decode() {
     }
     decoded.push("");
     document.getElementById("decoded-inst").value = decoded.join("\n");
-    decodebut.classList.remove("is-loading")
+    } catch (e) {
+      document.getElementById("decoded-inst").value = "An error has occured! Please view the console to see the error!";
+      console.warn(e);
+    }
+    decodebut.classList.remove("is-loading");
 }
 
 function clearDecoder() {
