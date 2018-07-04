@@ -142,7 +142,12 @@ decoder = {
           ins = "slti";
           break;
         case 3:
-          ins = "sltiu";
+          if (decoder.pseudoDecode && imm == 1) {
+            ins = "seqz";
+            format = decoder.PRR_FORMAT;
+          } else {
+            ins = "sltiu";
+          }
           break;
         case 4:
           if (decoder.pseudoDecode && imm == -1) {
@@ -315,7 +320,13 @@ decoder = {
         case 3:
           switch(func7) {
               case 0x00:
-                  ins = "sltu";
+                  if(decoder.pseudoDecode && decoder.isRegZero(rs1)){
+                    ins = "snez";
+                    format = decoder.PRR_FORMAT;
+                    rs1 = rs2;
+                  } else {
+                    ins = "sltu";
+                  }
                   break;
               case 0x01:
                   ins = "mulhu";
