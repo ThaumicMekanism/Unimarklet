@@ -164,11 +164,13 @@ function venusdecoder() {
                 <tr>
                   <th><center>Use Registers Sudo-names</center></th>
                   <th><center>Decode to Pseudo Instruction<br>if possible (experimental)</center></th>
+                  <th id="nop" style="display:none;"><center>Convert any line which<br>does nothing to a nop</center></th>
                 </tr>
               </thead>
                 <tr>
                   <th><center><button id="sudoRegID" class="button is-primary" onclick="toggleThis(this)" value="true">Pseudo RegID</button></center></th>
-                  <th><center><button id="usePseudoInst" class="button" onclick="toggleThis(this)" value="false" disabled>Attempt Pseudo Decode</button></center></th>
+                  <th><center><button id="usePseudoInst" class="button" onclick="toggleThis(this); nopVisiblity(this.value);" value="false" >Attempt Pseudo Decode</button></center></th>
+                  <th><center><button id="nopAll" style="display:none;" class="button" onclick="toggleThis(this)" value="false">nop All</button></center></th>
                 </tr>
             </table><br>
             </center>
@@ -247,6 +249,17 @@ function dhijackFunctions() {
       };
       }, 10);
     }
+}
+
+function nopVisiblity(vis){
+  var des = document.getElementById("nop");
+  var button = document.getElementById("nopAll");
+  var v = "none";
+  if (vis == "true") {
+    v = ""; 
+  }
+  des.style.display = v;
+  button.style.display = v;
 }
 
 function addTabs(text) {
