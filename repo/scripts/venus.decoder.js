@@ -135,7 +135,7 @@ function venusdecoder() {
       <div class="tile is-parent">
           <article class="tile is-child is-primary" align="center">
             <font size="6px">Instruction Decoder v1.0.0</font><br>
-            <font size="4px">Created by Stephan Kaminsky.</font>
+            <font size="4px">Created by <b>Stephan Kaminsky</b></font>
           </article>
         </center>
       </div>
