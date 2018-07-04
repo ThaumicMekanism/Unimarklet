@@ -5,6 +5,10 @@ decoder = {
   UTYPE_FORMAT : "%inst%\t%rd%, %imm%",
   BRANCH_FORMAT : "%inst%\t%rs1%, %rs2%, %imm%",
   INST_FORMAT : "%inst%",
+  PRL_FORMAT : "%inst%\t%rs1%, %imm%", /*Pseudo Register Label format*/
+  PR_FORMAT : "%inst%\t%rd%",
+  PL_FORMAT : "%inst%\t%imm%",
+  PRR_FORMAT : "%inst%\t%rd%, %rs1%",
   sudoRegs : ["zero", "ra", "sp", "gp", "tp", "t0", "t1", "t2", "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"],
   useSudoRegs : true,
   pseudoDecode : false,
@@ -15,10 +19,14 @@ decoder = {
     if (i < 0 || i > 31) {
       return null;
     }
-    if (useSudoRegs) {
-      return sudoRegs[i];
+    if (decoder.useSudoRegs) {
+      return decoder.sudoRegs[i];
     }
     return "x" + i;
+  },
+
+  isRegZero : function(reg) {
+    return reg == 0 || reg == decoder.getRegString(0);
   },
 
   handleUnknownInst : function (inst) {
@@ -387,13 +395,32 @@ decoder = {
   },
 
   branchInst : function (inst) {
+    rs1 = decoder.rs1(inst);
+    rs2 = decoder.rs2(inst);
     func3 = decoder.func3(inst);
+    format = decoder.BRANCH_FORMAT;
     switch(func3) {
       case 0:
-          ins = "beq";
+          if (decoder.pseudoDecode && (decoder.isRegZero(rs1)|| decoder.isRegZero(rs2))) {
+            if (!decoder.isRegZero(rs2)) {
+              rs1 = rs2;
+            }
+            ins = "beqz";
+            format = decoder.PRL_FORMAT;
+          } else {
+            ins = "beq";
+          }
           break;
       case 1:
-          ins = "bne";
+          if (decoder.pseudoDecode && (decoder.isRegZero(rs1)|| decoder.isRegZero(rs2))) {
+            if (!decoder.isRegZero(rs2)) {
+              rs1 = rs2;
+            }
+            ins = "bnez";
+            format = decoder.PRL_FORMAT;
+          } else {
+            ins = "bne";
+          }
           break;
       case 4:
           ins = "blt";
@@ -411,9 +438,7 @@ decoder = {
           return decoder.handleUnknownInst(inst);
     }
     imm = decoder.Immediate(inst.inst, "SB");
-    rs1 = decoder.rs1(inst);
-    rs2 = decoder.rs2(inst);
-    return decoder.BRANCH_FORMAT.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%imm%", imm);
+    return format.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%imm%", imm);
   },
 
   jalrInst : function (inst) {
@@ -426,8 +451,6 @@ decoder = {
         default:
           return decoder.handleUnknownInst(inst);
     }
-    rd = decoder.rd(inst);
-    rs1 = decoder.rs1(inst);
     return decoder.ITYPE_FORMAT.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm); 
   },
 
