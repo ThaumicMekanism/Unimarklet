@@ -7,7 +7,16 @@ decoder.BRANCH_FORMAT = "%inst%\t%rs1%, %rs2%, %imm%";
 decoder.INST_FORMAT = "%inst%";
 decoder.sudoRegs = ["zero", "ra", "sp", "gp", "tp", "t0", "t1", "t2", "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"];
 decoder.useSudoRegs = true;
-
+/*INST TO ADD:
+	div
+	divu
+	mul
+	mulh
+	mulhsu
+	mulhu
+	rem
+	remu
+*/
 decoder.getRegString = function(i) {
   i = Math.round(i);
   if (i < 0 || i > 31) {
@@ -48,6 +57,7 @@ var Instruction = class Instruction {
     var process = decoder.opcodeMap[this.opcode];
     if (!process) {
       this.decoded = decoder.handleUnknownInst(this);
+      return;
     }
     this.decoded = process(this);
   }
