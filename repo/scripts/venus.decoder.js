@@ -89,12 +89,20 @@ function setAlert(m) {
 }
 
 function decode() {
+  if (typeof decoder !== "object") {
+    var s = "[ERROR]: Could not find the decoder object! Check to see if the decoder actually loaded!";
+    alert(s);
+    console.warn(s);
+    return;
+  }
     //Add support for labels...
     //Add support for:            012123409354290785280385902805982058035972: 0x12345678 # nop
     //           0--sdfkasc0121234093542907852803dfghhjdhgj85902805982058035972:add x0 x0 x0# nop
     var reg = /0x.*/i;
     var decodebut = document.getElementById("decoder-decode");
     decoder.useSudoRegs = document.getElementById("sudoRegID").value == "true";
+    decoder.pseudoDecode = document.getElementById("usePseudoInst").value == "true";
+    decoder.nopAll = document.getElementById("nopAll").value == "true;"
     decodebut.classList.add("is-loading");
     //This function will go line by line and attempt to decode instrucitons.
     program = document.getElementById("hex-inst").value;
