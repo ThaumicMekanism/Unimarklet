@@ -587,7 +587,7 @@ decoder = {
     }
     switch(previnst.name) {
       case "auipc":
-        if (previnst.rd != inst.rd || inst.rs1 != inst.rd) {
+        if (previnst.rd != inst.rd || inst.rs1 != inst.rd || inst.name != "addi") {
           return allinsts;
         }
         ins = "la";
@@ -595,8 +595,12 @@ decoder = {
         imm = (previnst.imm << 12) | inst.imm;
         break;
       case "lui":
-        return allinsts;
-        imm = (previnst.imm << 12) | inst.imm
+        if (previnst.rd != inst.rd || inst.rs1 != inst.rd || inst.name != "addi") {
+          return allinsts;
+        }
+        ins = "li";
+        rd = inst.rd;
+        imm = (previnst.imm << 12) | inst.imm;
         break;
       default:
         return allinsts;
