@@ -264,7 +264,13 @@ decoder = {
                   ins = "mul";
                   break;
               case 0x20:
-                  ins = "sub";
+                  if (decoder.pseudoDecode && decoder.isRegZero(rs1)) {
+                    rs1 = rs2;
+                    format = decoder.PRR_FORMAT;
+                    ins = "neg";
+                  } else {
+                    ins = "sub";
+                  }
                   break;
               default:
                   return decoder.handleUnknownInst(inst);
