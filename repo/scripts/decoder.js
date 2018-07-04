@@ -116,9 +116,15 @@ decoder = {
     func3 = decoder.func3(inst);
     func7 = decoder.func7(inst);
     imm = decoder.Immediate(inst.inst, "I");
+    format = decoder.ITYPE_FORMAT;
     switch(func3) {
         case 0:
-          ins = "addi";
+          if (decoder.pseudoDecode && imm == 0) {
+            ins = "mv";
+            format = decoder.PRR_FORMAT;
+          } else {
+            ins = "addi";
+          }
           break;
         case 1:
           if (func7 == 0x00) {
@@ -162,7 +168,7 @@ decoder = {
     }
     rd = decoder.rd(inst);
     rs1 = decoder.rs1(inst);
-    return decoder.ITYPE_FORMAT.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm);
+    return format.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm);
   },
 
   uTypeInst : function (inst, mnemonic) {
@@ -236,11 +242,23 @@ decoder = {
   rTypeInst : function (inst) {
     func3 = decoder.func3(inst);
     func7 = decoder.func7(inst);
+    rd = decoder.rd(inst);
+    rs1 = decoder.rs1(inst);
+    rs2 = decoder.rs2(inst);
+    format = decoder.RTYPE_FORMAT;
     switch(func3) {
         case 0:
           switch(func7) {
               case 0x00:
-                  ins = "add";
+                  if (decoder.pseudoDecode && (decoder.isRegZero(rs1) || decoder.isRegZero(rs2))){
+                    if (!decoder.isRegZero(rs2)) {
+                      rs1 = rs2;
+                    }
+                    format = decoder.PRR_FORMAT;
+                    ins = "mv";
+                  } else {
+                    ins = "add";
+                  }
                   break;
               case 0x01:
                   ins = "mul";
@@ -342,10 +360,7 @@ decoder = {
         default:
           return decoder.handleUnknownInst(inst);
     }
-    rd = decoder.rd(inst);
-    rs1 = decoder.rs1(inst);
-    rs2 = decoder.rs2(inst);
-    return decoder.RTYPE_FORMAT.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%rd%", rd);
+    return format.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%rd%", rd);
   },
 
   rWordsInst : function (inst) {
