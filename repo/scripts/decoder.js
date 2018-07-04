@@ -117,9 +117,13 @@ decoder = {
     func7 = decoder.func7(inst);
     imm = decoder.Immediate(inst.inst, "I");
     format = decoder.ITYPE_FORMAT;
+    rd = decoder.rd(inst);
     switch(func3) {
         case 0:
-          if (decoder.pseudoDecode && imm == 0) {
+          if(decoder.pseudoDecode && decoder.isRegZero(rd)){
+            format = decoder.INST_FORMAT;
+            ins = "nop";
+          } else if (decoder.pseudoDecode && imm == 0) {
             ins = "mv";
             format = decoder.PRR_FORMAT;
           } else {
@@ -166,8 +170,11 @@ decoder = {
         default:
           return decoder.handleUnknownInst(inst);
     }
-    rd = decoder.rd(inst);
     rs1 = decoder.rs1(inst);
+    if (decoder.pseudoDecode && decoder.nopAll && decoder.isRegZero(rd)) {
+      format = decoder.INST_FORMAT;
+      ins = "nop";
+    }
     return format.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm);
   },
 
