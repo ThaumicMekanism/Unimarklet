@@ -185,12 +185,19 @@ decoder = {
       format = decoder.INST_FORMAT;
       ins = "nop";
     }
+    inst.name = ins;
+    inst.rd = rd;
+    inst.rs1 = rs1;
+    inst.imm = imm;
     return format.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm);
   },
 
   uTypeInst : function (inst, mnemonic) {
     rd = decoder.rd(inst);
     imm = decoder.Immediate(inst.inst, "U");
+    inst.rd = rd;
+    inst.imm = imm;
+    inst.name = mnemonic;
     return decoder.UTYPE_FORMAT.replace("%inst%", mnemonic).replace("%rd%", rd).replace("%imm%", imm);
   },
 
@@ -563,6 +570,48 @@ decoder = {
     return decoder.INST_FORMAT.replace("%inst%", ins);
   },
 
+  multiPseudo : function(allinsts) {
+    if (!decoder.pseudoDecode) {
+      return allinsts;
+    }
+    var inst = allinsts.pop();
+    var previnst = allinsts.pop();
+    if (typeof previnst !== "undefined") {
+       allinsts.push(previnst);
+    }
+    if (typeof inst !== "undefined") {
+       allinsts.push(inst);
+    }
+    if (!previnst || !["auipc", "lui"].includes(previnst.name)) {
+      return allinsts;
+    }
+    switch(previnst.name) {
+      case "auipc":
+        if (previnst.rd != inst.rd || inst.rs1 != inst.rd) {
+          return allinsts;
+        }
+        ins = "la";
+        rd = inst.rd;
+        imm = (previnst.imm << 12) | inst.imm;
+        break;
+      case "lui":
+        return allinsts;
+        imm = (previnst.imm << 12) | inst.imm
+        break;
+      default:
+        return allinsts;
+    }
+    var i = new Instruction(0);
+    i.rd = rd;
+    i.name = ins;
+    i.imm = imm;
+    i.decoded = decoder.PRL_FORMAT.replace("%inst%", ins).replace("%rs1%", rd).replace("%imm%", imm);
+    allinsts.pop();
+    allinsts.pop();
+    allinsts.push(i);
+    return allinsts;
+  },
+
   Immediate : function (inst, type) {
     switch(type.toUpperCase()) {
       case "I":
@@ -675,6 +724,7 @@ var Instruction = class Instruction {
     this.func3 = NaN;
     this.func7 = NaN;
     this.imm = NaN;
+    this.name = "";
     this.decoded = "";
     this.inst = parseInt(hex);
     this.notvalid = this.inst != hex;

@@ -108,21 +108,25 @@ function decode() {
       //This function will go line by line and attempt to decode instrucitons.
     program = document.getElementById("hex-inst").value;
     decoded = [];
+    instructions = [];
     if (program) {
       program = program.split('\n');
       for (line of program) {
         if (!reg.test(line) && line != "") {
           line = "0x" + line;
         }
-        inst = new Instruction(line);
-        decoded.push(inst.decoded);
+        instructions.push(new Instruction(line));
+        decoder.multiPseudo(instructions);
+      }
+      for (i of instructions) {
+        decoded.push(i.decoded);
       }
     }
     decoded.push("");
     document.getElementById("decoded-inst").value = decoded.join("\n");
     } catch (e) {
       document.getElementById("decoded-inst").value = "An error has occured! Please view the console to see the error!";
-      console.warn(e);
+      throw e;
     }
     decodebut.classList.remove("is-loading");
 }
