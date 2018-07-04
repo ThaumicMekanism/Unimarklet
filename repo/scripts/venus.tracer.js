@@ -511,7 +511,13 @@ function tracer() {
       <div class="tile is-parent">
           <article class="tile is-child is-primary" align="center">
             <font size="6px">Trace Generator v1.1.0</font><br>
-            <font size="4px">Created by Stephan Kaminsky.</font>
+            <font size="4px">
+              Created by <b>Stephan Kaminsky</b>
+            </font>
+            <br>
+            <font>
+              Credits to <b>Kvakil</b> for making Venus, an integral part to this tracer!
+            </font>
           </article>
         </center>
       </div>
