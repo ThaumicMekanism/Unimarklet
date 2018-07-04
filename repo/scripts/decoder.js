@@ -145,7 +145,12 @@ decoder = {
           ins = "sltiu";
           break;
         case 4:
-          ins = "xori";
+          if (decoder.pseudoDecode && imm == -1) {
+            ins = "not";
+            format = decoder.PRR_FORMAT;
+          } else {
+            ins = "xori";
+          }
           break;
         case 5:
           switch(func7) {
