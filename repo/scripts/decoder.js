@@ -454,7 +454,7 @@ decoder = {
     format = decoder.ITYPE_FORMAT;
     rd = decoder.rd(inst);
     rs1 = decoder.rs1(inst);
-    if (imm == 0 && decoder.isRegZero(rd)) {
+    if (decoder.pseudoDecode && imm == 0 && decoder.isRegZero(rd)) {
       format = decoder.PR_FORMAT;
       ins = "jr";
       rd = rs1;
@@ -467,7 +467,7 @@ decoder = {
     format = decoder.UTYPE_FORMAT;
     imm = decoder.Immediate(inst.inst, "UJ");
     rd = decoder.rd(inst);
-    if (decoder.isRegZero(rd)) {
+    if (decoder.pseudoDecode && decoder.isRegZero(rd)) {
       format = decoder.PL_FORMAT;
       ins = "j";
     }
