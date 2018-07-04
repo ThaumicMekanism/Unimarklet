@@ -7,16 +7,7 @@ decoder.BRANCH_FORMAT = "%inst%\t%rs1%, %rs2%, %imm%";
 decoder.INST_FORMAT = "%inst%";
 decoder.sudoRegs = ["zero", "ra", "sp", "gp", "tp", "t0", "t1", "t2", "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"];
 decoder.useSudoRegs = true;
-/*INST TO ADD:
-	div
-	divu
-	mul
-	mulh
-	mulhsu
-	mulhu
-	rem
-	remu
-*/
+
 decoder.getRegString = function(i) {
   i = Math.round(i);
   if (i < 0 || i > 31) {
@@ -27,9 +18,6 @@ decoder.getRegString = function(i) {
   }
   return "x" + i;
 }
-
-//Add support for:            012123409354290785280385902805982058035972: 0x12345678 # nop
-//           0--sdfkasc0121234093542907852803dfghhjdhgj85902805982058035972:add x0 x0 x0# nop
 
 var Instruction = class Instruction {
   constructor(hex) {
@@ -276,6 +264,9 @@ decoder.rTypeInst = function (inst) {
             case 0x00:
                 ins = "add";
                 break;
+            case 0x01:
+                ins = "mul";
+                break;
             case 0x20:
                 ins = "sub";
                 break;
@@ -288,6 +279,9 @@ decoder.rTypeInst = function (inst) {
             case 0x00:
                 ins = "sll";
                 break;
+            case 0x01:
+                ins = "mulh";
+                break;
             default:
                 return decoder.handleUnknownInst(inst);
         }
@@ -296,6 +290,9 @@ decoder.rTypeInst = function (inst) {
         switch(func7) {
             case 0x00:
                 ins = "slt";
+                break;
+            case 0x01:
+                ins = "mulhsu";
                 break;
             default:
                 return decoder.handleUnknownInst(inst);
@@ -306,6 +303,9 @@ decoder.rTypeInst = function (inst) {
             case 0x00:
                 ins = "sltu";
                 break;
+            case 0x01:
+                ins = "mulhu";
+                break;
             default:
                 return decoder.handleUnknownInst(inst);
         }
@@ -315,6 +315,9 @@ decoder.rTypeInst = function (inst) {
             case 0x00:
                 ins = "xor";
                 break;
+            case 0x01:
+                ins = "div";
+                break;
             default:
                 return decoder.handleUnknownInst(inst);
         }
@@ -323,6 +326,9 @@ decoder.rTypeInst = function (inst) {
         switch(func7) {
             case 0x00:
                 ins = "srl";
+                break;
+            case 0x01:
+                ins = "divu";
                 break;
             case 0x20:
                 ins = "sra";
@@ -336,6 +342,9 @@ decoder.rTypeInst = function (inst) {
             case 0x00:
                 ins = "or";
                 break;
+            case 0x01:
+                ins = "rem";
+                break;
             default:
                 return decoder.handleUnknownInst(inst);
         }
@@ -344,6 +353,9 @@ decoder.rTypeInst = function (inst) {
         switch(func7) {
             case 0x00:
                 ins = "and";
+                break;
+            case 0x01:
+                ins = "remu";
                 break;
             default:
                 return decoder.handleUnknownInst(inst);
