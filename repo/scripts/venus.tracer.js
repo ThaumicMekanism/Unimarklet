@@ -516,7 +516,7 @@ function tracer() {
             </font>
             <br>
             <font>
-              Credits to <b>Kvakil</b> for making Venus, an integral part to this tracer!
+              Credits to <b>Keyhan Vakil</b> for making Venus, an integral part to this tracer!
             </font>
           </article>
         </center>
