@@ -102,7 +102,7 @@ function decode() {
     var decodebut = document.getElementById("decoder-decode");
     decoder.useSudoRegs = document.getElementById("sudoRegID").value == "true";
     decoder.pseudoDecode = document.getElementById("usePseudoInst").value == "true";
-    decoder.nopAll = document.getElementById("nopAll").value == "true;"
+    decoder.nopAll = document.getElementById("nopAll").value == "true";
     decodebut.classList.add("is-loading");
     try {
       //This function will go line by line and attempt to decode instrucitons.
