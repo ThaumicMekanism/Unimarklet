@@ -92,6 +92,7 @@ function decode() {
     //Add support for labels...
     //Add support for:            012123409354290785280385902805982058035972: 0x12345678 # nop
     //           0--sdfkasc0121234093542907852803dfghhjdhgj85902805982058035972:add x0 x0 x0# nop
+    var reg = /0x.*/i;
     var decodebut = document.getElementById("decoder-decode");
     decoder.useSudoRegs = document.getElementById("sudoRegID").value == "true";
     decodebut.classList.add("is-loading");
@@ -101,6 +102,9 @@ function decode() {
     if (program) {
       program = program.split('\n');
       for (line of program) {
+        if (!reg.test(line) && line != "") {
+          line = "0x" + line;
+        }
         inst = new Instruction(line);
         decoded.push(inst.decoded);
       }
@@ -175,16 +179,16 @@ function venusdecoder() {
       <article class="tile is-child">
         Instruction Hex:&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="CopyToClipboard('hex-inst')">Copy!</a>
         <br>
-        <font size="2px">Make sure your instructions are in the correct hex format: Ex. 0xFFFFFFFF. Make sure instrucitons are separated just by a new line. Unknown instruction will not be decoded.</font>
+        <font size="2px">Make sure your instructions are in the correct hex format: Ex. 0xFFFFFFFF or FFFFFFFF. Make sure you have only <b>ONE</b> instruction per line! Unknown instruction will not be decoded.</font>
         <br>
-        <textarea id="hex-inst" class="textarea" placeholder="Input Instruction Hex"></textarea>
+        <textarea id="hex-inst" class="textarea" placeholder="Input Instruction Hex" style="height: 250px;"></textarea>
       </article>
     </div>
     <div class="tile is-parent">
       <article class="tile is-child">
         Decoded Instructions:&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="CopyToClipboard('decoded-inst')">Copy!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="downloadtrace('decoded-inst', 'decoded.hex', true)">Download!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="loadToEditor();">Load to Editor!</a>
         <br>
-        <textarea id="decoded-inst" class="textarea" placeholder="trace dump output" readonly=""></textarea>
+        <textarea id="decoded-inst" class="textarea" placeholder="trace dump output" style="height: 250px;" readonly=""></textarea>
       </article>
     </div>
     <br><br>

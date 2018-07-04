@@ -1,0 +1,44 @@
+add x0 x0 x0
+mul x0 x0 x0
+sub x0 x0 x0
+sll x0 x0 x0
+mulh x0 x0 x0
+slt x0 x0 x0
+sltu x0 x0 x0
+mulhu x0 x0 x0
+mulhsu x0 x0 x0
+xor x0 x0 x0
+div x0 x0 x0
+srl x0 x0 x0
+divu x0 x0 x0
+sra x0 x0 x0
+or x0 x0 x0
+rem x0 x0 x0
+and x0 x0 x0
+remu x0 x0 x0
+lb x0 0 (x0)
+lh x0 0 (x0)
+lw x0 0 (x0)
+sb x0 0 (x0)
+sw x0 0 (x0)
+sh x0 0 (x0)
+addi x0 x0 0
+slli x0 x0 0
+slti x0 x0 0
+sltiu x0 x0 0
+xori x0 x0 0
+srli x0 x0 0
+srai x0 x0 0
+ori x0 x0 0
+andi x0 x0 0
+jalr x0 x0 0
+ecall
+l:beq  x0 x0 l
+bne  x0 x0 l
+blt  x0 x0 l
+bge  x0 x0 l
+bgeu  x0 x0 l
+bltu  x0 x0 l
+auipc x0 0
+lui x0 0x001
+jal x0 l
