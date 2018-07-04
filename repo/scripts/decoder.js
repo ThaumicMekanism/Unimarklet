@@ -443,7 +443,6 @@ decoder = {
 
   jalrInst : function (inst) {
     func3 = decoder.func3(inst);
-    imm = decoder.Immediate(inst.inst, "I");
     switch(func3) {
         case 0:
           ins = "jalr";
@@ -451,14 +450,28 @@ decoder = {
         default:
           return decoder.handleUnknownInst(inst);
     }
-    return decoder.ITYPE_FORMAT.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm); 
+    imm = decoder.Immediate(inst.inst, "I");
+    format = decoder.ITYPE_FORMAT;
+    rd = decoder.rd(inst);
+    rs1 = decoder.rs1(inst);
+    if (imm == 0 && decoder.isRegZero(rd)) {
+      format = decoder.PR_FORMAT;
+      ins = "jr";
+      rd = rs1;
+    }
+    return format.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm); 
   },
 
   ujTypeInst : function (inst) {
     ins = "jal";
+    format = decoder.UTYPE_FORMAT;
     imm = decoder.Immediate(inst.inst, "UJ");
     rd = decoder.rd(inst);
-    return decoder.UTYPE_FORMAT.replace("%inst%", ins).replace("%rd%", rd).replace("%imm%", imm);
+    if (decoder.isRegZero(rd)) {
+      format = decoder.PL_FORMAT;
+      ins = "j";
+    }
+    return format.replace("%inst%", ins).replace("%rd%", rd).replace("%imm%", imm);
   },
 
   systemInst : function (inst) {
