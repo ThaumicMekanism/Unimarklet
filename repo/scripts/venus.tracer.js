@@ -308,6 +308,7 @@ function genTraceMain() {
     tracing = true;
     var tracebut = document.getElementById("trace-trace");
     baseString = document.getElementById("regPattern").value;
+    baseString = addTabs(baseString)
     tracebut.classList.add("is-loading");
     instfirst = document.getElementById("inst-first").value == "true";
     //setAlert("Generating trace...<br>(WARNING! Large traces may take a while!)");
@@ -660,7 +661,7 @@ function globalSaveRegMsg() {
 
 function addTabs(text) {
   var tab = RegExp("\\t", "g");
-  text.replace(tab,'\t');
+  return text.replace(tab,'\t');
 }
 
 function hijackFunctions() {
