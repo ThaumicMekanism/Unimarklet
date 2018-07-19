@@ -660,8 +660,7 @@ function globalSaveRegMsg() {
 }
 
 function vtaddTabs(text) {
-  var tab = RegExp("\\t", "g");
-  return text.replace(tab,'\t');
+  return text.replace(/\\t/g,'\t');
 }
 
 function hijackFunctions() {
