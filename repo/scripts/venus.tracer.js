@@ -2,7 +2,8 @@
     Created by Stephan Kaminsky
 */
 var debug = false;
-var newlinechar = "\n";
+var tgversion = "v1.1.1";
+var newlinechar = "";
 var Step = class Step {
   constructor(string) {
     this.stringPattern = string;
@@ -119,7 +120,7 @@ for (var i = 0; i < 32; i++) {
 }
 var lin = 0;
 var extra = 0;
-var baseString = "%0%\t%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%\t%17%\t%18%\t%19%\t%20%\t%21%\t%22%\t%23%\t%24%\t%25%\t%26%\t%27%\t%28%\t%29%\t%30%\t%31%\t%line%\t%pc%\t%inst%";
+var baseString = "%0%\t%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%\t%14%\t%15%\t%16%\t%17%\t%18%\t%19%\t%20%\t%21%\t%22%\t%23%\t%24%\t%25%\t%26%\t%27%\t%28%\t%29%\t%30%\t%31%\t%line%\t%pc%\t%inst%\n";
 function getOneTrace(additional, final) {
     //var res = "";
     //var vals = [];
@@ -199,98 +200,118 @@ function getOneTrace(additional, final) {
 }
 
 async function generateTrace() {
-    lin = 0;
-    extra = 0;
-    driver.reset();
-    if (document.getElementById("spzero").value == "true") {
-//       var ell = document.getElementById("reg-2-val");
-//       ell.value = "0x00000000";
-//       driver.saveRegister(ell, 2);
-         registerInteract(2, 0);
-         registerInteract(3, 0);
-    }
-    var res = [];
-    var runNextTrace = 1;
-    try {
-        var ecallExit = 0;
-        var getecall = 0;
-        if (!instfirst) {
-          driver.step();
-        }
-      while(canProceed(lin)) {
-       driver.step();
-        var selected = document.getElementsByClassName("is-selected")[0];
-        if (selected != null && selected.id != null && selected.id.indexOf("instruction-") != -1) {
-            var basecode = selected.getElementsByTagName("td")[1].innerHTML;
-            if (basecode != null) {
-                if(basecode == "ecall") {
-                    var r10 = parseInt(getVal(10));
-                    if (r10 == 10) {
-                        ecallExit = -2;
-                    } else {
-                        getecall = -2;
-                    }
-                }
-            }
-        }
-        getecall++;
-        if (!getecall) {
-            var consOut = document.getElementById("console-output");
-            if (consOut != null) {
-              if (debug) {
-                console.log(consOut.value);
+  if (document.getElementById("useNewTracer").value != "true"){
+      lin = 0;
+      extra = 0;
+      driver.reset();
+      if (document.getElementById("spzero").value == "true") {
+  //       var ell = document.getElementById("reg-2-val");
+  //       ell.value = "0x00000000";
+  //       driver.saveRegister(ell, 2);
+           registerInteract(2, 0);
+           registerInteract(3, 0);
+      }
+      var res = [];
+      var runNextTrace = 1;
+      try {
+          var ecallExit = 0;
+          var getecall = 0;
+          if (!instfirst) {
+            driver.step();
+          }
+        while(canProceed(lin)) {
+         driver.step();
+          var selected = document.getElementsByClassName("is-selected")[0];
+          if (selected != null && selected.id != null && selected.id.indexOf("instruction-") != -1) {
+              var basecode = selected.getElementsByTagName("td")[1].innerHTML;
+              if (basecode != null) {
+                  if(basecode == "ecall") {
+                      var r10 = parseInt(getVal(10));
+                      if (r10 == 10) {
+                          ecallExit = -2;
+                      } else {
+                          getecall = -2;
+                      }
+                  }
               }
-                res.push(consOut.value);
-                consOut.value = "";
-            }
-        } else {
-            getecall = (getecall == -1) ? -1 : 0;
-        }
-        ecallExit++;
-        if (!ecallExit) {
-            res = res.join("");
-            res += "exiting the simulator";
-            break;
-        } else {
-            ecallExit = (ecallExit == -1) ? -1 : 0;
-        }
-        res.push(getOneTrace(false, false));
-        if (debug) {
-          console.log(res);
-        }
-     }
-    } catch (e) { 
-      if (debug) {
-        console.log(e);
-      }
-    }
-    if (!instfirst) {
-      res.push(getOneTrace(true, true));
-    }
-    try {
-      var ii = 0;
-      if (instfirst) {
-        ii = -1;
-      }
-      for (var i = ii;((i < numBlankCommands || (((i - 1) < totalCommands) && totalCommands > 0)) && canProceed(lin)); i++) {
-       res.push(getOneTrace(true, false));
-       if (debug) {
-        console.log(res);
+          }
+          getecall++;
+          if (!getecall) {
+              var consOut = document.getElementById("console-output");
+              if (consOut != null) {
+                if (debug) {
+                  console.log(consOut.value);
+                }
+                  res.push(consOut.value);
+                  consOut.value = "";
+              }
+          } else {
+              getecall = (getecall == -1) ? -1 : 0;
+          }
+          ecallExit++;
+          if (!ecallExit) {
+              res = res.join("");
+              res += "exiting the simulator";
+              break;
+          } else {
+              ecallExit = (ecallExit == -1) ? -1 : 0;
+          }
+          res.push(getOneTrace(false, false));
+          if (debug) {
+            console.log(res);
+          }
        }
-     }
-    }
-    catch(e) {
-      if (debug) {
-        console.log(e);
+      } catch (e) { 
+        if (debug) {
+          console.log(e);
+        }
       }
+      if (!instfirst) {
+        res.push(getOneTrace(true, true));
+      }
+      try {
+        var ii = 0;
+        if (instfirst) {
+          ii = -1;
+        }
+        for (var i = ii;((i < numBlankCommands || (((i - 1) < totalCommands) && totalCommands > 0)) && canProceed(lin)); i++) {
+         res.push(getOneTrace(true, false));
+         if (debug) {
+          console.log(res);
+         }
+       }
+      }
+      catch(e) {
+        if (debug) {
+          console.log(e);
+        }
+      }
+      setAlert("Trace done! Finishing up...");
+      document.getElementById("trace-output").value = res.join("");
+  } else {
+    try {
+      driver.tr.format = document.getElementById("regPattern").value;
+      driver.tr.base = parseInt(document.getElementById("numbase").value)
+      driver.tr.totCommands = parseInt(document.getElementById("numtot").value)
+      var tms = parseInt(document.getElementById("numextra").value);
+      if (tms) {
+        driver.tr.maxSteps = tms;
+      }
+      driver.tr.instFirst = document.getElementById("inst-first").value == "true";
+      driver.tr.setWordAddressed_6taknv$(document.getElementById("wrdaddrpc").value == "true");
+      if (document.getElementById("spzero") == "true") {
+        driver.sim.state_0.regs_0[2] = 0;
+        driver.sim.state_0.regs_0[3] = 0;
+      }
+      driver.tr.trace();
+      setAlert("Trace done! Generating string...");
+      driver.tr.traceString();
+      setAlert("Trace String done! Finishing up...");
+      document.getElementById("trace-output").value = driver.tr.tr.str;
+    } catch (e) {
+      document.getElementById("trace-output").value = e.toString()
     }
-    setAlert("Trace done! Finishing up...");
-    //res.push(newlinechar);
-    //document.write(res.join(""));
-    //document.close();
-    document.getElementById("trace-output").value = res.join("");
-    //driver.dump();
-    //document.getElementById("trace-dump").value = document.getElementById("console-output").value;
+  }
     ddump();
     openTrace();
     tracing = false;
@@ -453,10 +474,17 @@ function toggleThis(e) {
   if (e.value == "true") {
     e.classList.remove("is-primary");
     e.value = "false";
+    if (e.id == "useNewTracer") {
+      document.getElementById("tgversion").innerHTML = tgversion;
+    }
   } else {
     e.classList.add("is-primary");
     e.value = "true";
+    if (e.id == "useNewTracer") {
+      document.getElementById("tgversion").innerHTML = driver.tr.version;
+    }
   }
+  
 }
 function validateBase(e) {
   if (e.value == "") {
@@ -511,7 +539,7 @@ function tracer() {
     <div class="tile">
       <div class="tile is-parent">
           <article class="tile is-child is-primary" align="center">
-            <font size="6px">Trace Generator v1.1.0</font><br>
+            <font size="6px">Trace Generator <span id="tgversion">` + tgversion + `</span></font><br>
             <font size="4px">
               Created by <b>Stephan Kaminsky</b>
             </font>
@@ -573,6 +601,8 @@ function tracer() {
                   <th><center>Set SP & GP to 0<br>before the trace?*</center></th>
                   <th><center>Save Registers?**<br><a onclick="resetRegisters();">Click to reset</a></center></th>
                   <th><center>Instruction first?***</center></th>
+                  <th><center>Word Addressed PC?</center></th>
+                  <th><center>Use new Tracer?</center></th>
                 </tr>
               </thead>
                 <tr>
@@ -584,6 +614,8 @@ function tracer() {
                   </center></th>
                   <th><center><button id="save-regs" class="button" onclick="toggleThis(this);saveRegs = this.value;globalSaveRegMsg();" value="false">Save</button></center></th>
                   <th><center><button id="inst-first" class="button is-primary" onclick="toggleThis(this)" value="true">Inst First</button></center></th>
+                  <th><center><button id="wrdaddrpc" class="button is-primary" onclick="toggleThis(this)" value="true">PC Word Addressed</button></center></th>
+                  <th><center><button id="useNewTracer" class="button is-primary" onclick="toggleThis(this)" value="true">Use New Tracer</button></center></th>
                 </tr>
             </table>
             <font size="2px">Notes:</font>
@@ -643,6 +675,15 @@ function tracer() {
     </center>
   `;
   document.body.insertBefore(noticelm, document.body.children[0]);
+
+  if (typeof driver.tr == "undefined") {
+    var e = document.getElementById("useNewTracer");
+    toggleThis(e);
+    e.disabled = true;
+  } else {
+    document.getElementById("tgversion").innerHTML = driver.tr.version;
+  }
+
   codeMirror.save();
   
   driver.openSimulator();
