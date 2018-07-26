@@ -153,7 +153,7 @@ function venusdecoder() {
     <div class="tile">
       <div class="tile is-parent">
           <article class="tile is-child is-primary" align="center">
-            <font size="6px">RISC-V Decoder v1.0.1</font><br>
+            <font size="6px">RISC-V Machinecode Decoder v1.0.1</font><br>
             <font size="4px">Created by <b>Stephan Kaminsky</b></font>
           </article>
         </center>
@@ -217,7 +217,7 @@ function venusdecoder() {
     <br><br>
    </div>
   </div></center>`;
-  aelem.innerHTML = "RISC-V Decoder";
+  aelem.innerHTML = "Decoder";
   lielem.appendChild(aelem);
   document.getElementsByClassName('tabs')[0].children[0].appendChild(lielem);
   insertAfter(secelem, document.getElementById("simulator-tab-view"));

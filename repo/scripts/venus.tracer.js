@@ -647,7 +647,7 @@ function tracer() {
     <br><br>
    </div>
   </div>`;
-  aelem.innerHTML = "Trace Generator";
+  aelem.innerHTML = "Tracer";
   lielem.appendChild(aelem);
   document.getElementsByClassName('tabs')[0].children[0].appendChild(lielem);
   insertAfter(secelem, document.getElementById("simulator-tab-view"));
