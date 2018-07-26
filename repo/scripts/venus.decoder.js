@@ -118,8 +118,9 @@ function decode() {
         instructions.push(new Instruction(line));
         decoder.multiPseudo(instructions);
       }
+      decoder.addLabels(instructions);
       for (i of instructions) {
-        decoded.push(i.decoded);
+        decoded.push(i.decode());
       }
     }
     decoded.push("");
@@ -151,7 +152,7 @@ function venusdecoder() {
     <div class="tile">
       <div class="tile is-parent">
           <article class="tile is-child is-primary" align="center">
-            <font size="6px">Instruction Decoder v1.0.0</font><br>
+            <font size="6px">RISC-V Decoder v1.0.1</font><br>
             <font size="4px">Created by <b>Stephan Kaminsky</b></font>
           </article>
         </center>
@@ -179,7 +180,7 @@ function venusdecoder() {
             <table id="options" class="table" style="width:50%; margin-bottom: 0;">
               <thead>
                 <tr>
-                  <th><center>Use Registers Sudo-names</center></th>
+                  <th><center>Use Registers Pseudo-names</center></th>
                   <th><center>Decode to Pseudo Instruction<br>if possible (experimental)</center></th>
                   <th id="nop" style="display:none;"><center>Convert any line which<br>does nothing to a nop</center></th>
                 </tr>
@@ -213,7 +214,7 @@ function venusdecoder() {
     <br><br>
    </div>
   </div></center>`;
-  aelem.innerHTML = "RISC-V Instruction Decoder";
+  aelem.innerHTML = "RISC-V Decoder";
   lielem.appendChild(aelem);
   document.getElementsByClassName('tabs')[0].children[0].appendChild(lielem);
   insertAfter(secelem, document.getElementById("simulator-tab-view"));

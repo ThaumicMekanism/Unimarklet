@@ -30,6 +30,7 @@ decoder = {
   },
 
   handleUnknownInst : function (inst) {
+  	inst.notvalid = true;
     return "#" + decoder.decimalToHexString(inst.inst) + " #Unknown Instruction!";
   },
 
@@ -97,6 +98,11 @@ decoder = {
       default:
         return decoder.handleUnknownInst(inst);
     }
+    inst.name = ins;
+    inst.rs1 = ins;
+    inst.rs2 = ins;
+    inst.imm = imm;
+    inst.format = decoder.MEM_FORMAT;
     return decoder.MEM_FORMAT.replace("%inst%", ins).replace("%rs2%", rs2).replace("%rs1%", rs1).replace("%imm%", imm);
   },
 
@@ -104,12 +110,15 @@ decoder = {
     func3 = decoder.func3(inst);
     switch(func3) {
       case 0:
-        return INST_FORMAT.replace("%inst%", "fence");
+       	ins = "fence";
       case 1:
-        return INST_FORMAT.replace("%inst%", "fence.i");
+      	ins = "fence.i";
       default:
         return decoder.handleUnknownInst(inst);
     }
+    inst.name = ins;
+    inst.format = decoder.INST_FORMAT;
+    return INST_FORMAT.replace("%inst%", ins);
   },
 
   itypeArithmeticInst : function (inst) {
@@ -189,6 +198,7 @@ decoder = {
     inst.rd = rd;
     inst.rs1 = rs1;
     inst.imm = imm;
+    inst.format = format;
     return format.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm);
   },
 
@@ -198,6 +208,7 @@ decoder = {
     inst.rd = rd;
     inst.imm = imm;
     inst.name = mnemonic;
+    inst.format = decoder.UTYPE_FORMAT;
     return decoder.UTYPE_FORMAT.replace("%inst%", mnemonic).replace("%rd%", rd).replace("%imm%", imm);
   },
 
@@ -236,6 +247,11 @@ decoder = {
     }
     rd = decoder.rd(inst);
     rs1 = decoder.rs1(inst);
+    inst.name = ins;
+    inst.rd = rd;
+    inst.rs1 = rs1;
+    inst.imm = imm;
+    inst.format = decoder.ITYPE_FORMAT;
     return decoder.ITYPE_FORMAT.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm);
   },
 
@@ -260,6 +276,11 @@ decoder = {
     imm = decoder.Immediate(inst.inst, "S");
     rs1 = decoder.rs1(inst);
     rs2 = decoder.rs2(inst);
+    inst.name = ins;
+    inst.rs1 = rs1;
+    inst.rs2 = rs2;
+    inst.imm = imm;
+    inst.format = decoder.MEM_FORMAT;
     return decoder.MEM_FORMAT.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%imm%", imm);
   },
 
@@ -396,6 +417,11 @@ decoder = {
         default:
           return decoder.handleUnknownInst(inst);
     }
+    inst.name = ins;
+    inst.rd = rd;
+    inst.rs1 = rs1;
+    inst.rs2 = rs2;
+    inst.format = format;
     return format.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%rd%", rd);
   },
 
@@ -442,6 +468,11 @@ decoder = {
     rd = decoder.rd(inst);
     rs1 = decoder.rs1(inst);
     rs2 = decoder.rs2(inst);
+    inst.name = ins;
+    inst.rd = rd;
+    inst.rs1 = rs1;
+    inst.rs2 = rs2;
+    inst.format = decoder.RTYPE_FORMAT;
     return decoder.RTYPE_FORMAT.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%rd%", rd);
   },
 
@@ -489,6 +520,11 @@ decoder = {
           return decoder.handleUnknownInst(inst);
     }
     imm = decoder.Immediate(inst.inst, "SB");
+    inst.name = ins;
+    inst.rs1 = rs1;
+    inst.rs2 = rs1;
+    inst.imm = imm;
+    inst.format = format;
     return format.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%imm%", imm);
   },
 
@@ -515,6 +551,11 @@ decoder = {
         rd = rs1;
       }
     }
+    inst.name = ins;
+    inst.rd = rd;
+    inst.rs1 = rs1;
+    inst.imm = imm;
+    inst.format = format;
     return format.replace("%inst%", ins).replace("%rd%", rd).replace("%rs1%", rs1).replace("%imm%", imm); 
   },
 
@@ -527,6 +568,10 @@ decoder = {
       format = decoder.PL_FORMAT;
       ins = "j";
     }
+    inst.name = ins;
+    inst.rd = rd;
+    inst.imm = imm;
+    inst.format = format;
     return format.replace("%inst%", ins).replace("%rd%", rd).replace("%imm%", imm);
   },
 
@@ -567,7 +612,33 @@ decoder = {
       default:
           return decoder.handleUnknownInst(inst);
     }
+    inst.name = ins;
+    inst.format = decoder.INST_FORMAT;
     return decoder.INST_FORMAT.replace("%inst%", ins);
+  },
+
+  addLabels : function(instList) {
+  	//return instList;
+  	//labelInsts = [];
+  	labelLocs = {};
+  	for (i in instList) {
+  		inst = instList[i];
+  		if (inst && !inst.notvalid && ["beq", "bge", "bgeu", "blt", "bltu", "bne", "jal", "beqz", "bnez", "j"].includes(inst.name)) {
+  			inst.addr = i * 4;
+  			//labelInsts.push(inst);
+  			inst.format = inst.format.replace("%imm%", "%ilabel% #offset=%imm%");
+  			var offset = inst.imm + inst.addr;
+  			inst.ilabel = "L" + offset;
+  			labelLocs[offset] = inst.ilabel;
+  		}
+  		/*Label format will just be L#. Maybe adj in future. Would have to rewrite and add to this to make that work.*/
+  	}
+  	for (adr of Object.keys(labelLocs)) {
+      realAdr = adr / 4;
+      var ins = instList[realAdr];
+      ins.label = labelLocs[adr];
+      ins.format = "%label%: " + ins.format
+    }
   },
 
   multiPseudo : function(allinsts) {
@@ -728,6 +799,8 @@ var Instruction = class Instruction {
     this.func3 = NaN;
     this.func7 = NaN;
     this.imm = NaN;
+    this.label = "";
+    this.format = "";
     this.name = "";
     this.decoded = "";
     this.inst = parseInt(hex);
@@ -749,6 +822,14 @@ var Instruction = class Instruction {
       return;
     }
     this.decoded = process(this);
+  }
+
+  decode() {
+  	//Will add support for combining data here.
+  	if (!this.notvalid) {
+  		this.decoded = this.format.replace("%inst%", this.name).replace("%rd%", this.rd).replace("%rs1%", this.rs1).replace("%rs2%", this.rs2).replace("%imm%", this.imm).replace("%label%", this.label).replace("%ilabel%", this.ilabel);
+  	}
+  	return this.decoded;
   }
 }
 
