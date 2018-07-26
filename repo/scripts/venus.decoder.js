@@ -103,6 +103,7 @@ function decode() {
     decoder.useSudoRegs = document.getElementById("sudoRegID").value == "true";
     decoder.pseudoDecode = document.getElementById("usePseudoInst").value == "true";
     decoder.nopAll = document.getElementById("nopAll").value == "true";
+    decoder.addLabels = document.getElementById("addLabels").value == "true";
     decodebut.classList.add("is-loading");
     try {
       //This function will go line by line and attempt to decode instrucitons.
@@ -118,7 +119,7 @@ function decode() {
         instructions.push(new Instruction(line));
         decoder.multiPseudo(instructions);
       }
-      decoder.addLabels(instructions);
+      decoder.labeler(instructions);
       for (i of instructions) {
         decoded.push(i.decode());
       }
@@ -181,12 +182,14 @@ function venusdecoder() {
               <thead>
                 <tr>
                   <th><center>Use Registers Pseudo-names</center></th>
+                  <th><center>Add labels</center></th>
                   <th><center>Decode to Pseudo Instruction<br>if possible (experimental)</center></th>
                   <th id="nop" style="display:none;"><center>Convert any line which<br>does nothing to a nop</center></th>
                 </tr>
               </thead>
                 <tr>
                   <th><center><button id="sudoRegID" class="button is-primary" onclick="toggleThis(this)" value="true">Pseudo RegID</button></center></th>
+                  <th><center><button id="addLabels" class="button is-primary" onclick="toggleThis(this)" value="true">Add Labels</button></center></th>
                   <th><center><button id="usePseudoInst" class="button" onclick="toggleThis(this); nopVisiblity(this.value);" value="false" >Attempt Pseudo Decode</button></center></th>
                   <th><center><button id="nopAll" style="display:none;" class="button" onclick="toggleThis(this)" value="false">nop All</button></center></th>
                 </tr>

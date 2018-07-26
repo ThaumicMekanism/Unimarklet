@@ -13,6 +13,7 @@ decoder = {
   useSudoRegs : true,
   pseudoDecode : false,
   nopAll : false,
+  addLabels : false,
 
   getRegString : function(i) {
     i = Math.round(i);
@@ -617,7 +618,10 @@ decoder = {
     return decoder.INST_FORMAT.replace("%inst%", ins);
   },
 
-  addLabels : function(instList) {
+  labeler : function(instList) {
+    if (!decoder.addLabels) {
+      return;
+    }
   	//return instList;
   	//labelInsts = [];
   	labelLocs = {};
