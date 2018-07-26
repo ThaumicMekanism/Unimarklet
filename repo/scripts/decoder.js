@@ -100,8 +100,8 @@ decoder = {
         return decoder.handleUnknownInst(inst);
     }
     inst.name = ins;
-    inst.rs1 = ins;
-    inst.rs2 = ins;
+    inst.rs1 = rs1;
+    inst.rs2 = rs2;
     inst.imm = imm;
     inst.format = decoder.MEM_FORMAT;
     return decoder.MEM_FORMAT.replace("%inst%", ins).replace("%rs2%", rs2).replace("%rs1%", rs1).replace("%imm%", imm);
