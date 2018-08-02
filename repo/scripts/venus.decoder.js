@@ -111,7 +111,7 @@ function decode() {
     decoded = [];
     instructions = [];
     if (program) {
-      program = program.split('\n');
+      program = program.split(/\n|\s/g);
       for (line of program) {
         if (!reg.test(line) && line != "") {
           line = "0x" + line;
@@ -202,7 +202,7 @@ function venusdecoder() {
       <article class="tile is-child">
         Instruction Hex:&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="CopyToClipboard('hex-inst')">Copy!</a>
         <br>
-        <font size="2px">Make sure your instructions are in the correct hex format: Ex. 0xFFFFFFFF or FFFFFFFF. Make sure you have only <b>ONE</b> instruction per line! Unknown instruction will not be decoded.</font>
+        <font size="2px">Make sure your instructions are in the correct hex format: Ex. 0xFFFFFFFF or FFFFFFFF. Only put instruction separated by spaces or new lines! Unknown instruction will not be decoded.</font>
         <br>
         <textarea id="hex-inst" class="textarea" placeholder="Input Instruction Hex" style="height: 250px;"></textarea>
       </article>
