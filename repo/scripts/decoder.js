@@ -31,7 +31,7 @@ decoder = {
   },
 
   handleUnknownInst : function (inst) {
-  	inst.notvalid = true;
+    inst.notvalid = true;
     return "#" + decoder.decimalToHexString(inst.inst) + " #Unknown Instruction!";
   },
 
@@ -111,9 +111,9 @@ decoder = {
     func3 = decoder.func3(inst);
     switch(func3) {
       case 0:
-       	ins = "fence";
+        ins = "fence";
       case 1:
-      	ins = "fence.i";
+        ins = "fence.i";
       default:
         return decoder.handleUnknownInst(inst);
     }
@@ -523,7 +523,7 @@ decoder = {
     imm = decoder.Immediate(inst.inst, "SB");
     inst.name = ins;
     inst.rs1 = rs1;
-    inst.rs2 = rs1;
+    inst.rs2 = rs2;
     inst.imm = imm;
     inst.format = format;
     return format.replace("%inst%", ins).replace("%rs1%", rs1).replace("%rs2%", rs2).replace("%imm%", imm);
@@ -622,22 +622,22 @@ decoder = {
     if (!decoder.addLabels) {
       return;
     }
-  	//return instList;
-  	//labelInsts = [];
-  	labelLocs = {};
-  	for (i in instList) {
-  		inst = instList[i];
-  		if (inst && !inst.notvalid && ["beq", "bge", "bgeu", "blt", "bltu", "bne", "jal", "beqz", "bnez", "j"].includes(inst.name)) {
-  			inst.addr = i * 4;
-  			//labelInsts.push(inst);
-  			inst.format = inst.format.replace("%imm%", "%ilabel% #offset=%imm%");
-  			var offset = inst.imm + inst.addr;
-  			inst.ilabel = "L" + offset;
-  			labelLocs[offset] = inst.ilabel;
-  		}
-  		/*Label format will just be L#. Maybe adj in future. Would have to rewrite and add to this to make that work.*/
-  	}
-  	for (adr of Object.keys(labelLocs)) {
+    //return instList;
+    //labelInsts = [];
+    labelLocs = {};
+    for (i in instList) {
+      inst = instList[i];
+      if (inst && !inst.notvalid && ["beq", "bge", "bgeu", "blt", "bltu", "bne", "jal", "beqz", "bnez", "j"].includes(inst.name)) {
+        inst.addr = i * 4;
+        //labelInsts.push(inst);
+        inst.format = inst.format.replace("%imm%", "%ilabel% #offset=%imm%");
+        var offset = inst.imm + inst.addr;
+        inst.ilabel = "L" + offset;
+        labelLocs[offset] = inst.ilabel;
+      }
+      /*Label format will just be L#. Maybe adj in future. Would have to rewrite and add to this to make that work.*/
+    }
+    for (adr of Object.keys(labelLocs)) {
       realAdr = adr / 4;
       var ins = instList[realAdr];
       ins.label = labelLocs[adr];
@@ -829,11 +829,11 @@ var Instruction = class Instruction {
   }
 
   decode() {
-  	//Will add support for combining data here.
-  	if (!this.notvalid) {
-  		this.decoded = this.format.replace("%inst%", this.name).replace("%rd%", this.rd).replace("%rs1%", this.rs1).replace("%rs2%", this.rs2).replace("%imm%", this.imm).replace("%label%", this.label).replace("%ilabel%", this.ilabel);
-  	}
-  	return this.decoded;
+    //Will add support for combining data here.
+    if (!this.notvalid) {
+      this.decoded = this.format.replace("%inst%", this.name).replace("%rd%", this.rd).replace("%rs1%", this.rs1).replace("%rs2%", this.rs2).replace("%imm%", this.imm).replace("%label%", this.label).replace("%ilabel%", this.ilabel);
+    }
+    return this.decoded;
   }
 }
 
