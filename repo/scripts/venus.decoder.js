@@ -153,7 +153,7 @@ function venusdecoder() {
     <div class="tile">
       <div class="tile is-parent">
           <article class="tile is-child is-primary" align="center">
-            <font size="6px">RISC-V Machinecode Decoder v1.0.1</font><br>
+            <font size="6px">RISC-V Disassembler v1.0.1</font><br>
             <font size="4px">Created by <b>Stephan Kaminsky</b></font>
           </article>
         </center>
@@ -164,7 +164,7 @@ function venusdecoder() {
         <article class="tile is-child is-primary" id="simulator-controls-container">
           <div class="field is-grouped is-grouped-centered">
             <div class="control">
-              <button id="decoder-decode" class="button is-primary" onclick="decode()">Decode</button>
+              <button id="decoder-decode" class="button is-primary" onclick="decode()">Disassemble</button>
             </div>
             <div class="control">
               <button id="decoder-clear" class="button" onclick="clearDecoder()">Clear</button>
@@ -209,7 +209,7 @@ function venusdecoder() {
     </div>
     <div class="tile is-parent">
       <article class="tile is-child">
-        Decoded Instructions:&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="CopyToClipboard('decoded-inst')">Copy!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="downloadtrace('decoded-inst', 'decoded.hex', true)">Download!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="loadToEditor();">Load to Editor!</a>
+        Disassembled Instructions:&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="CopyToClipboard('decoded-inst')">Copy!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="downloadtrace('decoded-inst', 'decoded.hex', true)">Download!</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="loadToEditor();">Load to Editor!</a>
         <br>
         <textarea id="decoded-inst" class="textarea" placeholder="trace dump output" style="height: 250px;" readonly=""></textarea>
       </article>
