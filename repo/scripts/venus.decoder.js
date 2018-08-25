@@ -306,6 +306,7 @@ function removeDecoder() {
   document.getElementById("decoder-tab").remove();
   document.getElementById("alertsDiv").remove();
   document.getElementById("decoder-tab-view").remove();
+  var decoderIsLoaded = undefined;
   return;
   if (typeof driver.tos === "undefined") {
       driver.openSimulator = driver.os;
