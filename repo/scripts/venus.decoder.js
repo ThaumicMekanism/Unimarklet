@@ -324,7 +324,7 @@ function mainDecoder() {
     console.log("Reloading decoder...");
     var decodertab = document.getElementById("decoder-tab");
     var wasactive = false;
-    if (decodertab.getAttribute("class") == "is-active") {
+    if (decodertab && decodertab.getAttribute("class") == "is-active") {
       wasactive = true;
     }
     removeDecoder();
