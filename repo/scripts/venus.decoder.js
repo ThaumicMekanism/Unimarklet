@@ -37,9 +37,12 @@ function openDecoder() {
 function closeDecoder() {
   var decodertab = document.getElementById("decoder-tab");
   var decodertv = document.getElementById("decoder-tab-view");
-  
-  decodertv.style.display = "none";
-  decodertab.setAttribute("class", "");
+  if (decodertv !== null) {
+  	decodertv.style.display = "none";
+  }
+  if (decodertab !== null) {
+  	decodertab.setAttribute("class", "");
+  }
 }
 function toggleThis(e) {
   if (e.value == "true") {
