@@ -244,9 +244,9 @@ function venusdecoder() {
     </center>
   `;
   document.body.insertBefore(noticelm, document.body.children[0]);
-  codeMirror.save();
-  driver.openSimulator();
-  driver.openEditor();
+  //codeMirror.save();
+  //driver.openSimulator();
+  //driver.openEditor();
   dhijackFunctions();
 }
 
