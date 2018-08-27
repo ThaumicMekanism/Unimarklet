@@ -1,3 +1,4 @@
+console.log("Loading decoder...");
 decoder = {
   RTYPE_FORMAT : "%inst%\t%rd%, %rs1%, %rs2%",
   ITYPE_FORMAT : "%inst%\t%rd%, %rs1%, %imm%",
