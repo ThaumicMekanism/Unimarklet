@@ -20,29 +20,16 @@ function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 function openDecoder() {
-  var editortab = document.getElementById("editor-tab");
-  var simulatortab = document.getElementById("simulator-tab");
-  var decodertab = document.getElementById("decoder-tab");
-  var decodertv = document.getElementById("decoder-tab-view");
-  var simulator = document.getElementById("simulator-tab-view");
-  
-  codeMirror.save(); 
-  driver.openSimulator();
-  if (simulatortab.classList.contains("is-active")) {
-    simulatortab.setAttribute("class", "");
-    decodertab.setAttribute("class", "is-active");
-    simulator.style.display = "none";
-    decodertv.style.display = "block";
-  }
+  venus_main.venus.glue.Renderer.renderTab("decoder", venus_main.venus.glue.Renderer.mainTabs)
 }
 function closeDecoder() {
   var decodertab = document.getElementById("decoder-tab");
   var decodertv = document.getElementById("decoder-tab-view");
   if (decodertv !== null) {
-  	decodertv.style.display = "none";
+    decodertv.style.display = "none";
   }
   if (decodertab !== null) {
-  	decodertab.setAttribute("class", "");
+    decodertab.setAttribute("class", "");
   }
 }
 function toggleThis(e) {
@@ -221,20 +208,7 @@ function venusdecoder() {
   aelem.innerHTML = "Decoder";
   lielem.appendChild(aelem);
   document.getElementsByClassName('tabs')[0].children[0].appendChild(lielem);
-  insertAfter(secelem, document.getElementById("simulator-tab-view"));
-
-  var editortab = document.getElementById("editor-tab");
-  var simulatortab = document.getElementById("simulator-tab");
-  var editoronclick = editortab.getAttribute("onclick");
-  var simulatoronclick = simulatortab.getAttribute("onclick");
-
-  if (typeof editoronclick === "string" && !editoronclick.includes("closeDecoder();")) {
-    editortab.setAttribute("onclick", editoronclick + "closeDecoder();")
-  }
-  if (typeof simulatoronclick === "string" && !simulatoronclick.includes("closeDecoder();")) {
-    simulatortab.setAttribute("onclick", simulatoronclick + "closeDecoder();")
-  }
-  
+  insertAfter(secelem, document.getElementById("simulator-tab-view"));  
 
   var noticelm = document.createElement("div");
   noticelm.setAttribute("id", "alertsDiv");
@@ -245,32 +219,7 @@ function venusdecoder() {
     </center>
   `;
   document.body.insertBefore(noticelm, document.body.children[0]);
-  //codeMirror.save();
-  //driver.openSimulator();
-  //driver.openEditor();
-  dhijackFunctions();
-}
-
-function dhijackFunctions() {
-    if (typeof driver.os === "undefined") {
-        driver.os = driver.openSimulator;
-    }
-    if (typeof driver.oe === "undefined") {
-      driver.oe = driver.openEditor;
-      driver.openEditor = function(){
-        driver.openSimulator();
-        driver.oe();
-      }
-    }
-    if (typeof driver.dos === "undefined") {
-      driver.dos = driver.openSimulator;
-      setTimeout(function(){
-      driver.openSimulator = function(){
-        closeDecoder();
-        driver.dos();
-      };
-      }, 10);
-    }
+  venus_main.venus.glue.Renderer.mainTabs.add_11rb$("decoder");
 }
 
 function nopVisiblity(vis){
@@ -303,6 +252,10 @@ function loadToEditor() {
 
 var curNumBase = 2;
 function removeDecoder() {
+  venus_main.venus.glue.Renderer.mainTabs.remove_11rb$("decoder");
+  if (document.getElementById("decoder-tab").classList.contains("is-active")) {
+       venus_main.venus.glue.Renderer.renderTab("editor", venus_main.venus.glue.Renderer.mainTabs);
+  }
   dcdrval = document.getElementById("hex-inst").value;
   document.getElementById("decoder-tab").remove();
   document.getElementById("alertsDiv").remove();
