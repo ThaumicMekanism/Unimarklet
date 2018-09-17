@@ -219,7 +219,7 @@ function venusdecoder() {
     </center>
   `;
   document.body.insertBefore(noticelm, document.body.children[0]);
-  venus_main.venus.glue.Renderer.mainTabs.add_11rb$("decoder");
+  venus_main.venus.glue.Renderer.addTab("decoder", venus_main.venus.glue.Renderer.mainTabs);
 }
 
 function nopVisiblity(vis){
@@ -252,7 +252,7 @@ function loadToEditor() {
 
 var curNumBase = 2;
 function removeDecoder() {
-  venus_main.venus.glue.Renderer.mainTabs.remove_11rb$("decoder");
+  venus_main.venus.glue.Renderer.removeTab("decoder", venus_main.venus.glue.Renderer.mainTabs);
   if (document.getElementById("decoder-tab").classList.contains("is-active")) {
        venus_main.venus.glue.Renderer.renderTab("editor", venus_main.venus.glue.Renderer.mainTabs);
   }
